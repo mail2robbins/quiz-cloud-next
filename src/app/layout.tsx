@@ -1,41 +1,32 @@
-import './globals.css'
-import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
-import { ThemeProvider } from '@/components/ThemeProvider'
-import Navbar from '@/components/Navbar'
-import AuthProvider from '@/components/AuthProvider'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from './providers';
+import AuthProvider from '../components/AuthProvider';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'QuizMaster',
-  description: 'Test your knowledge with interactive quizzes',
-  icons: {
-    icon: '/favicon.svg',
-  },
-}
-
-export const viewport: Viewport = {
-  themeColor: '#4F46E5',
-}
+  title: 'Modern Next.js App',
+  description: 'A modern web application built with Next.js',
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="min-h-screen bg-background text-foreground antialiased transition-colors duration-300">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <AuthProvider>
-            <Navbar />
-            <main className="container mx-auto px-4 py-8 glass mt-8 shadow-xl">
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200`}>
+        <AuthProvider>
+          <ThemeProvider>
+            <main className="container mx-auto px-4 py-8">
               {children}
             </main>
-          </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
-  )
-}
+  );
+} 
