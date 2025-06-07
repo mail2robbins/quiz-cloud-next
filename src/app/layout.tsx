@@ -1,14 +1,22 @@
-import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from 'react-hot-toast'
-import { AuthProvider } from '@/components/auth-provider'
+import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
+import { ThemeProvider } from '@/components/ThemeProvider'
+import Navbar from '@/components/Navbar'
+import AuthProvider from '@/components/AuthProvider'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
-export const metadata = {
-  title: 'TriviaVerse',
-  description: 'A whole universe of trivia challenges',
+export const metadata: Metadata = {
+  title: 'QuizMaster',
+  description: 'Test your knowledge with interactive quizzes',
+  icons: {
+    icon: '/favicon.svg',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#4F46E5',
 }
 
 export default function RootLayout({
@@ -17,17 +25,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground antialiased transition-colors duration-300">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
-            {children}
-            <Toaster position="bottom-right" />
+            <Navbar />
+            <main className="container mx-auto px-4 py-8 glass mt-8 shadow-xl">
+              {children}
+            </main>
           </AuthProvider>
         </ThemeProvider>
       </body>
