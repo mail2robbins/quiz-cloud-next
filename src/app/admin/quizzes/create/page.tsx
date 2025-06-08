@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface Question {
   text: string;
@@ -27,6 +28,7 @@ export default function CreateQuiz() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const addQuestion = () => {
     setQuestions([
@@ -86,6 +88,7 @@ export default function CreateQuiz() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setSubmitting(true);
     let categoryName = '';
     if (categoryMode === 'new' && newCategoryName.trim()) {
       categoryName = newCategoryName.trim();
@@ -127,13 +130,14 @@ export default function CreateQuiz() {
           if (data && data.error) errorMsg = data.error;
           else if (typeof data === 'string') errorMsg = data;
         } catch (e) {
-          // fallback to status text if not JSON
           errorMsg = response.statusText || errorMsg;
         }
         setError(errorMsg);
       }
     } catch (error) {
       setError('Failed to create quiz');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -143,6 +147,7 @@ export default function CreateQuiz() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {submitting && <LoadingOverlay />}
       <h1 className="text-3xl font-bold mb-6">Create New Quiz</h1>
       {success && <div className="mb-4 text-green-600 dark:text-green-400">{success}</div>}
       {error && <div className="mb-4 text-red-500">{error}</div>}

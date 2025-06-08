@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface Question {
   id: string;
@@ -93,7 +94,7 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
   };
 
   if (!quiz) {
-    return <div>Loading...</div>;
+    return <LoadingOverlay />;
   }
 
   const formatTime = (seconds: number) => {

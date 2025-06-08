@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface QuizAttempt {
   id: string;
@@ -56,7 +57,7 @@ export default function QuizHistory() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingOverlay />;
   }
 
   return (

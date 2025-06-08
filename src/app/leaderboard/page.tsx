@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface LeaderboardEntry {
   user: {
@@ -39,7 +40,7 @@ export default function Leaderboard() {
   }, [timeFrame]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingOverlay />;
   }
 
   return (

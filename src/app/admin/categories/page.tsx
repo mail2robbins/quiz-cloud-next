@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface Category {
   id: string;
@@ -100,6 +101,7 @@ export default function AdminCategories() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      {loading && <LoadingOverlay />}
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Manage Categories</h1>
       <form onSubmit={handleAddCategory} className="flex space-x-2 mb-6">
         <input
