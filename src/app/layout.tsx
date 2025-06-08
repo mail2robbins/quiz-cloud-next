@@ -1,31 +1,36 @@
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import Header from '@/components/Header';
+import Providers from '@/components/Providers';
 import { ThemeProvider } from './providers';
-import AuthProvider from '../components/AuthProvider';
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Modern Next.js App',
-  description: 'A modern web application built with Next.js',
+export const metadata = {
+  title: 'Quiz App',
+  description: 'A modern quiz application',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200`}>
-        <AuthProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <Providers session={session}>
           <ThemeProvider>
-            <main className="container mx-auto px-4 py-8">
-              {children}
-            </main>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+              <Header />
+              <main className="py-6">{children}</main>
+            </div>
           </ThemeProvider>
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

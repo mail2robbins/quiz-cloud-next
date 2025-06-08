@@ -6,12 +6,14 @@ import { motion } from 'framer-motion';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { User } from 'lucide-react';
+import Link from 'next/link';
 
-export function Header() {
+export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const { data: session } = useSession();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isAdmin = session?.user?.role === 'ADMIN';
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -31,69 +33,105 @@ export function Header() {
   }, [showMenu]);
 
   return (
-    <header className="py-6">
-      <nav className="flex items-center justify-between">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Modern App
-          </h1>
-        </motion.div>
-
-        <div className="flex items-center gap-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleTheme}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            {theme === 'light' ? '🌙' : '☀️'}
-          </motion.button>
-
-          {!session ? (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => signIn()}
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors duration-200"
-            >
-              Sign In
-            </motion.button>
-          ) : (
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setShowMenu((v) => !v)}
-                className="focus:outline-none"
-                aria-haspopup="true"
-                aria-expanded={showMenu}
+    <header className="bg-white dark:bg-gray-800 shadow-md">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/" className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                Quiz App
+              </Link>
+            </div>
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <Link
+                href="/quizzes"
+                className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
-                <Avatar className="w-9 h-9 cursor-pointer border-2 border-indigo-500">
-                  <AvatarImage src={session.user?.image || undefined} alt={session.user?.name || 'User'} />
-                  <AvatarFallback>
-                    <User className="w-5 h-5" />
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-              {showMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50">
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                    <div className="font-semibold text-gray-900 dark:text-white">{session.user?.name}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{session.user?.email}</div>
-                  </div>
-                  <button
-                    onClick={() => { setShowMenu(false); signOut(); }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg transition-colors"
-                  >
-                    Log out
-                  </button>
-                </div>
+                Quizzes
+              </Link>
+              <Link
+                href="/history"
+                className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              >
+                History
+              </Link>
+              <Link
+                href="/leaderboard"
+                className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              >
+                Leaderboard
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin/quizzes"
+                  className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                >
+                  Manage Quizzes
+                </Link>
               )}
             </div>
-          )}
+          </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+            >
+              {theme === 'dark' ? (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              )}
+            </button>
+            {session ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-700 dark:text-gray-300">
+                  {session.user?.name}
+                  {isAdmin && (
+                    <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded-full">
+                      Admin
+                    </span>
+                  )}
+                </span>
+                <Link
+                  href="/api/auth/signout"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  Sign Out
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href="/api/auth/signin"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
       </nav>
     </header>
