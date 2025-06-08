@@ -25,6 +25,8 @@ export default function CreateQuiz() {
   const [categoryMode, setCategoryMode] = useState<'select' | 'new'>('select');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   const addQuestion = () => {
     setQuestions([
@@ -82,21 +84,18 @@ export default function CreateQuiz() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let categoryId = selectedCategoryId;
+    setError('');
+    setSuccess('');
+    let categoryName = '';
     if (categoryMode === 'new' && newCategoryName.trim()) {
-      // Create new category
-      const res = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newCategoryName.trim() }),
-      });
-      if (res.ok) {
-        const created = await res.json();
-        categoryId = created.id;
-      } else {
-        alert('Failed to create category');
-        return;
-      }
+      categoryName = newCategoryName.trim();
+    } else if (categoryMode === 'select') {
+      const selected = categories.find((c) => c.id === selectedCategoryId);
+      categoryName = selected ? selected.name : '';
+    }
+    if (!categoryName) {
+      setError('Please select or enter a category.');
+      return;
     }
     try {
       const response = await fetch('/api/quizzes', {
@@ -107,18 +106,34 @@ export default function CreateQuiz() {
         body: JSON.stringify({
           title,
           description,
-          category: categoryId,
+          category: categoryName,
           timeLimit,
           questions,
         }),
       });
       if (response.ok) {
-        router.push('/admin/quizzes');
+        setSuccess('Quiz created successfully!');
+        setTitle('');
+        setDescription('');
+        setCategoryMode('select');
+        setSelectedCategoryId('');
+        setNewCategoryName('');
+        setTimeLimit(30);
+        setQuestions([{ text: '', options: [{ text: '', isCorrect: false }] }]);
       } else {
-        throw new Error('Failed to create quiz');
+        let errorMsg = 'Failed to create quiz';
+        try {
+          const data = await response.json();
+          if (data && data.error) errorMsg = data.error;
+          else if (typeof data === 'string') errorMsg = data;
+        } catch (e) {
+          // fallback to status text if not JSON
+          errorMsg = response.statusText || errorMsg;
+        }
+        setError(errorMsg);
       }
     } catch (error) {
-      console.error('Error creating quiz:', error);
+      setError('Failed to create quiz');
     }
   };
 
@@ -129,36 +144,38 @@ export default function CreateQuiz() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Create New Quiz</h1>
+      {success && <div className="mb-4 text-green-600 dark:text-green-400">{success}</div>}
+      {error && <div className="mb-4 text-red-500">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Description
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             rows={3}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Category</label>
           <select
             value={categoryMode === 'select' ? selectedCategoryId : '__new__'}
             onChange={handleCategoryChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             required={categoryMode === 'select'}
           >
             <option value="">Select a category</option>
@@ -173,21 +190,21 @@ export default function CreateQuiz() {
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="New category name"
-              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-2 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               required
             />
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Time Limit (minutes)
           </label>
           <input
             type="number"
             value={timeLimit}
             onChange={(e) => setTimeLimit(Number(e.target.value))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             min="1"
             required
           />
@@ -198,14 +215,14 @@ export default function CreateQuiz() {
           {questions.map((question, questionIndex) => (
             <div key={questionIndex} className="border p-4 rounded-md">
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                   Question {questionIndex + 1}
                 </label>
                 <input
                   type="text"
                   value={question.text}
                   onChange={(e) => updateQuestion(questionIndex, e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   required
                 />
               </div>
@@ -224,7 +241,7 @@ export default function CreateQuiz() {
                           option.isCorrect
                         )
                       }
-                      className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      className="flex-1 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       placeholder={`Option ${optionIndex + 1}`}
                       required
                     />
