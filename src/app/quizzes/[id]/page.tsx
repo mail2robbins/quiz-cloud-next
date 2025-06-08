@@ -28,7 +28,7 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -38,7 +38,6 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
         if (response.ok) {
           const data = await response.json();
           setQuiz(data);
-          setTimeLeft(data.timeLimit * 60); // Convert minutes to seconds
         }
       } catch (error) {
         console.error('Error fetching quiz:', error);
@@ -49,17 +48,22 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   useEffect(() => {
+    if (quiz && typeof quiz.timeLimit === 'number' && quiz.timeLimit > 0) {
+      setTimeLeft(quiz.timeLimit * 60);
+    }
+  }, [quiz]);
+
+  useEffect(() => {
+    if (!quiz || timeLeft === null) return;
     if (timeLeft <= 0) {
       handleSubmit();
       return;
     }
-
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
     }, 1000);
-
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, quiz]);
 
   const handleAnswer = (questionId: string, optionId: string) => {
     setAnswers((prev) => ({
@@ -107,8 +111,8 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
     <div className="max-w-4xl mx-auto p-6">
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold">{quiz.title}</h1>
-        <div className="text-2xl font-mono bg-gray-100 px-4 py-2 rounded">
-          {formatTime(timeLeft)}
+        <div className="text-2xl font-mono bg-gray-100 dark:bg-gray-900 px-4 py-2 rounded">
+          {formatTime(timeLeft !== null ? timeLeft : (quiz && typeof quiz.timeLimit === 'number' ? quiz.timeLimit * 60 : 0))}
         </div>
       </div>
 
@@ -126,7 +130,7 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
         </p>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">
           {quiz.questions[currentQuestion].text}
         </h2>
@@ -134,7 +138,7 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
           {quiz.questions[currentQuestion].options.map((option) => (
             <label
               key={option.id}
-              className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+              className="flex items-center p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
             >
               <input
                 type="radio"
