@@ -14,6 +14,7 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isAdmin = session?.user?.role === 'ADMIN';
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -31,6 +32,10 @@ export default function Header() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showMenu]);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md">
@@ -107,7 +112,7 @@ export default function Header() {
               )}
             </button>
             {session ? (
-              <div className="flex items-center space-x-4">
+              <div className="hidden sm:flex items-center space-x-4">
                 <span className="text-gray-700 dark:text-gray-300">
                   {session.user?.name}
                   {isAdmin && (
@@ -126,14 +131,137 @@ export default function Header() {
             ) : (
               <Link
                 href="/api/auth/signin"
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                className="hidden sm:block text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               >
                 Sign In
               </Link>
             )}
+            {/* Mobile menu button */}
+            <button
+              onClick={toggleMobileMenu}
+              className="sm:hidden p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isMobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile menu */}
+      <div
+        className={`sm:hidden fixed inset-0 z-50 transform transition-transform duration-300 ease-in-out ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="fixed inset-0 bg-black bg-opacity-50" onClick={toggleMobileMenu}></div>
+        <div className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg">
+          <div className="pt-5 pb-4 px-4">
+            <div className="flex items-center justify-between">
+              <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                Menu
+              </div>
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="mt-6 space-y-4">
+              <Link
+                href="/quizzes"
+                className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                onClick={toggleMobileMenu}
+              >
+                Quizzes
+              </Link>
+              <Link
+                href="/history"
+                className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                onClick={toggleMobileMenu}
+              >
+                History
+              </Link>
+              <Link
+                href="/leaderboard"
+                className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                onClick={toggleMobileMenu}
+              >
+                Leaderboard
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin/quizzes"
+                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                  onClick={toggleMobileMenu}
+                >
+                  Manage Quizzes
+                </Link>
+              )}
+              {session ? (
+                <>
+                  <div className="px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300">
+                    {session.user?.name}
+                    {isAdmin && (
+                      <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded-full">
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                  <Link
+                    href="/api/auth/signout"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                    onClick={toggleMobileMenu}
+                  >
+                    Sign Out
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="/api/auth/signin"
+                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                  onClick={toggleMobileMenu}
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
   );
 } 
