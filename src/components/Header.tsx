@@ -5,8 +5,9 @@ import { useTheme } from '../app/providers';
 import { motion } from 'framer-motion';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
-import { User } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import ConfirmationDialog from './ConfirmationDialog';
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
@@ -15,6 +16,7 @@ export default function Header() {
   const menuRef = useRef<HTMLDivElement>(null);
   const isAdmin = session?.user?.role === 'ADMIN';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -35,6 +37,14 @@ export default function Header() {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleSignOut = () => {
+    setIsSignOutDialogOpen(true);
+  };
+
+  const confirmSignOut = () => {
+    window.location.href = '/api/auth/signout';
   };
 
   return (
@@ -113,27 +123,38 @@ export default function Header() {
             </button>
             {session ? (
               <div className="hidden sm:flex items-center space-x-4">
-                <span className="text-gray-700 dark:text-gray-300">
-                  {session.user?.name}
-                  {isAdmin && (
-                    <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded-full">
-                      Admin
+                <div className="flex items-center space-x-3 bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-full">
+                  <div className="flex-shrink-0">
+                    <div className="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                      <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {session.user?.name}
                     </span>
-                  )}
-                </span>
-                <Link
-                  href="/api/auth/signout"
-                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    {isAdmin && (
+                      <span className="text-xs text-indigo-600 dark:text-indigo-400">
+                        Administrator
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 >
-                  Sign Out
-                </Link>
+                  <LogOut className="h-5 w-5" />
+                  <span>Sign Out</span>
+                </button>
               </div>
             ) : (
               <Link
                 href="/api/auth/signin"
-                className="hidden sm:block text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                className="hidden sm:flex items-center space-x-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               >
-                Sign In
+                <User className="h-5 w-5" />
+                <span>Sign In</span>
               </Link>
             )}
             {/* Mobile menu button */}
@@ -200,7 +221,28 @@ export default function Header() {
                 </svg>
               </button>
             </div>
-            <div className="mt-6 space-y-4">
+            {session && (
+              <div className="mt-6 mb-4 px-3 py-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                      <User className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {session.user?.name}
+                    </span>
+                    {isAdmin && (
+                      <span className="text-xs text-indigo-600 dark:text-indigo-400">
+                        Administrator
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="mt-6 space-y-1">
               <Link
                 href="/quizzes"
                 className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
@@ -232,36 +274,37 @@ export default function Header() {
                 </Link>
               )}
               {session ? (
-                <>
-                  <div className="px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300">
-                    {session.user?.name}
-                    {isAdmin && (
-                      <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded-full">
-                        Admin
-                      </span>
-                    )}
-                  </div>
-                  <Link
-                    href="/api/auth/signout"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                    onClick={toggleMobileMenu}
-                  >
-                    Sign Out
-                  </Link>
-                </>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2 w-full px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span>Sign Out</span>
+                </button>
               ) : (
                 <Link
                   href="/api/auth/signin"
-                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                  className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                   onClick={toggleMobileMenu}
                 >
-                  Sign In
+                  <User className="h-5 w-5" />
+                  <span>Sign In</span>
                 </Link>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={isSignOutDialogOpen}
+        onClose={() => setIsSignOutDialogOpen(false)}
+        onConfirm={confirmSignOut}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+      />
     </header>
   );
 } 
