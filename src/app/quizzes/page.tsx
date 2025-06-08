@@ -36,7 +36,7 @@ export default function QuizList() {
           // Extract unique categories
           const uniqueCategories = Array.from(
             new Set(data.map((quiz: Quiz) => quiz.category.name))
-          );
+          ) as string[];
           setCategories(uniqueCategories);
         }
       } catch (error) {
@@ -68,13 +68,13 @@ export default function QuizList() {
       </div>
 
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
           Filter by Category
         </label>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
           <option value="">All Categories</option>
           {categories.map((category) => (
@@ -89,19 +89,19 @@ export default function QuizList() {
         {quizzes.map((quiz) => (
           <div
             key={quiz.id}
-            className="bg-white overflow-hidden shadow rounded-lg"
+            className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg"
           >
             <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {quiz.title}
               </h3>
-              <p className="mt-1 text-sm text-gray-500">{quiz.description}</p>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{quiz.description}</p>
               <div className="mt-4">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
                   {quiz.category.name}
                 </span>
               </div>
-              <div className="mt-4 flex justify-between text-sm text-gray-500">
+              <div className="mt-4 flex justify-between text-sm text-gray-500 dark:text-gray-400">
                 <span>{quiz._count.questions} questions</span>
                 <span>{quiz._count.attempts} attempts</span>
               </div>
@@ -120,11 +120,11 @@ export default function QuizList() {
 
       {quizzes.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No quizzes available.</p>
+          <p className="text-gray-500 dark:text-gray-400">No quizzes available.</p>
           {session?.user?.role === 'ADMIN' && (
             <Link
               href="/admin/quizzes/create"
-              className="mt-4 inline-block text-indigo-600 hover:text-indigo-500"
+              className="mt-4 inline-block text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
             >
               Create your first quiz
             </Link>

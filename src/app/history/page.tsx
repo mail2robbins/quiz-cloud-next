@@ -61,21 +61,21 @@ export default function QuizHistory() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Quiz History</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Quiz History</h1>
       
       {attempts.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500">You haven't taken any quizzes yet.</p>
+          <p className="text-gray-500 dark:text-gray-400">You haven't taken any quizzes yet.</p>
           <Link
             href="/quizzes"
-            className="mt-4 inline-block text-indigo-600 hover:text-indigo-500"
+            className="mt-4 inline-block text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
           >
             Browse Available Quizzes
           </Link>
         </div>
       ) : (
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
+        <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
             {attempts.map((attempt) => (
               <li key={attempt.id}>
                 <div className="px-4 py-4 sm:px-6">
@@ -83,19 +83,19 @@ export default function QuizHistory() {
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/quizzes/${attempt.quiz.id}`}
-                        className="text-lg font-medium text-indigo-600 hover:text-indigo-500 truncate"
+                        className="text-lg font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 truncate"
                       >
                         {attempt.quiz.title}
                       </Link>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Started: {formatDate(attempt.startedAt)}
                       </p>
                     </div>
                     <div className="ml-4 flex-shrink-0 flex flex-col items-end">
-                      <div className="text-lg font-semibold text-gray-900">
+                      <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Score: {attempt.score}%
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         Time: {formatTimeSpent(attempt.timeSpent)}
                       </div>
                     </div>
