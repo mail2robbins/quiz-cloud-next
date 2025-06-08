@@ -44,7 +44,7 @@ export default function Header() {
   };
 
   const confirmSignOut = () => {
-    window.location.href = '/api/auth/signout';
+    signOut({ callbackUrl: '/' });
   };
 
   return (
