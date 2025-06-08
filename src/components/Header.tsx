@@ -77,12 +77,20 @@ export default function Header() {
                 Leaderboard
               </Link>
               {isAdmin && (
-                <Link
-                  href="/admin/quizzes"
-                  className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Manage Quizzes
-                </Link>
+                <>
+                  <Link
+                    href="/admin/quizzes"
+                    className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    Manage Quizzes
+                  </Link>
+                  <Link
+                    href="/admin/categories"
+                    className="border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-100 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  >
+                    Manage Categories
+                  </Link>
+                </>
               )}
             </div>
           </div>
@@ -265,13 +273,22 @@ export default function Header() {
                 Leaderboard
               </Link>
               {isAdmin && (
-                <Link
-                  href="/admin/quizzes"
-                  className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                  onClick={toggleMobileMenu}
-                >
-                  Manage Quizzes
-                </Link>
+                <>
+                  <Link
+                    href="/admin/quizzes"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                    onClick={toggleMobileMenu}
+                  >
+                    Manage Quizzes
+                  </Link>
+                  <Link
+                    href="/admin/categories"
+                    className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                    onClick={toggleMobileMenu}
+                  >
+                    Manage Categories
+                  </Link>
+                </>
               )}
               {session ? (
                 <button

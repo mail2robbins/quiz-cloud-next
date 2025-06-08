@@ -1,23 +1,24 @@
-import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcryptjs';
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create admin user
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-  
-  const admin = await prisma.user.upsert({
+
+  // Upsert admin user (no password field)
+  await prisma.user.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: { role: 'ADMIN' },
     create: {
       email: adminEmail,
-      name: 'Admin User',
+      name: 'Admin',
       role: 'ADMIN',
     },
   });
 
-  console.log({ admin });
+  // You can add more seed logic here if needed
+
+  console.log('Admin user seeded:', adminEmail);
 }
 
 main()
