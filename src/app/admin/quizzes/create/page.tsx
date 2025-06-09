@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import LoadingOverlay from '@/components/LoadingOverlay';
+import { Trash2 } from 'lucide-react';
 
 interface Question {
   text: string;
@@ -58,6 +59,12 @@ export default function CreateQuiz() {
   ) => {
     const newQuestions = [...questions];
     newQuestions[questionIndex].options[optionIndex] = { text, isCorrect };
+    setQuestions(newQuestions);
+  };
+
+  const removeOption = (questionIndex: number, optionIndex: number) => {
+    const newQuestions = [...questions];
+    newQuestions[questionIndex].options.splice(optionIndex, 1);
     setQuestions(newQuestions);
   };
 
@@ -259,32 +266,52 @@ export default function CreateQuiz() {
                           option.isCorrect
                         )
                       }
-                      className="flex-1 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      className="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                       placeholder={`Option ${optionIndex + 1}`}
-                      required
                     />
-                    <label className="flex items-center">
+                    <label className="flex items-center space-x-2">
                       <input
-                        type="checkbox"
+                        type="radio"
+                        name={`correct-${questionIndex}`}
                         checked={option.isCorrect}
-                        onChange={(e) =>
+                        onChange={() => {
+                          // Set all options to false first
+                          question.options.forEach((_, idx) => {
+                            updateOption(
+                              questionIndex,
+                              idx,
+                              option.text,
+                              false
+                            );
+                          });
+                          // Then set the selected option to true
                           updateOption(
                             questionIndex,
                             optionIndex,
                             option.text,
-                            e.target.checked
-                          )
-                        }
-                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            true
+                          );
+                        }}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <span className="ml-2 text-sm text-gray-600">Correct</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        Correct
+                      </span>
                     </label>
+                    <button
+                      type="button"
+                      onClick={() => removeOption(questionIndex, optionIndex)}
+                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1"
+                      title="Remove option"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 ))}
                 <button
                   type="button"
                   onClick={() => addOption(questionIndex)}
-                  className="text-sm text-indigo-600 hover:text-indigo-500"
+                  className="text-indigo-600 hover:text-indigo-500"
                 >
                   Add Option
                 </button>
