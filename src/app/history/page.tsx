@@ -12,8 +12,7 @@ interface QuizAttempt {
     title: string;
   };
   score: number;
-  startedAt: string;
-  completedAt: string;
+  createdAt: string;
   timeSpent: number;
 }
 
@@ -112,7 +111,7 @@ export default function QuizHistory() {
                       {formatTimeSpent(attempt.timeSpent)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {formatDate(attempt.startedAt)}
+                      {formatDate(attempt.createdAt)}
                     </td>
                   </tr>
                 ))}

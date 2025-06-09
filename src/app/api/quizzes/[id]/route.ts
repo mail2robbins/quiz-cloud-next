@@ -91,15 +91,53 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   const { id } = params;
   try {
-    // Delete the quiz from the database
-    await prisma.quiz.delete({
-      where: { id },
+    // First delete all related records
+    await prisma.answer.deleteMany({
+      where: {
+        question: {
+          quizId: id
+        }
+      }
     });
-    return NextResponse.json({ success: true });
+
+    await prisma.option.deleteMany({
+      where: {
+        question: {
+          quizId: id
+        }
+      }
+    });
+
+    await prisma.question.deleteMany({
+      where: {
+        quizId: id
+      }
+    });
+
+    await prisma.quizAttempt.deleteMany({
+      where: {
+        quizId: id
+      }
+    });
+
+    // Finally delete the quiz
+    await prisma.quiz.delete({
+      where: { id }
+    });
+
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error('Error deleting quiz:', error);
-    return NextResponse.json({ error: 'Failed to delete quiz - This quiz is already in use' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to delete quiz - This quiz is already in use', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 } 

@@ -17,10 +17,16 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeFrame, setTimeFrame] = useState<'all' | 'month' | 'week'>('all');
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = `/api/auth/signin?callbackUrl=/leaderboard`;
+    }
+  }, [status]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -40,7 +46,7 @@ export default function Leaderboard() {
     fetchLeaderboard();
   }, [timeFrame]);
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return <LoadingOverlay />;
   }
 

@@ -109,28 +109,30 @@ model Option {
 }
 
 model QuizAttempt {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  quiz      Quiz     @relation(fields: [quizId], references: [id])
-  quizId    String
-  score     Int
-  answers   Answer[]
-  startedAt DateTime @default(now())
-  completedAt DateTime?
-  timeSpent Int? // in seconds
+  id             String   @id @default(cuid())
+  quiz           Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId         String
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String
+  score          Int
+  timeSpent      Int
+  attemptDetails Json     // Stores complete attempt history including questions and answers
+  answers        Answer[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Answer {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
   quizAttemptId String
-  question      Question @relation(fields: [questionId], references: [id])
+  question      Question    @relation(fields: [questionId], references: [id])
   questionId    String
-  selectedOption Option  @relation(fields: [selectedOptionId], references: [id])
+  selectedOption Option     @relation(fields: [selectedOptionId], references: [id])
   selectedOptionId String
   isCorrect     Boolean
-  answeredAt    DateTime @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 enum Role {

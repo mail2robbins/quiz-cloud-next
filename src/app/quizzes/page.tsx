@@ -19,11 +19,17 @@ interface Quiz {
 }
 
 export default function QuizList() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = `/api/auth/signin?callbackUrl=/quizzes`;
+    }
+  }, [status]);
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -50,7 +56,7 @@ export default function QuizList() {
     fetchQuizzes();
   }, [selectedCategory]);
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return <LoadingOverlay />;
   }
 

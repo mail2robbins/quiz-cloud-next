@@ -24,12 +24,18 @@ interface Quiz {
 
 export default function TakeQuiz({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push(`/api/auth/signin?callbackUrl=/quizzes/${params.id}`);
+    }
+  }, [status, params.id, router]);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -96,6 +102,10 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
       console.error('Error submitting quiz:', error);
     }
   };
+
+  if (status === 'loading') {
+    return <LoadingOverlay />;
+  }
 
   if (!quiz) {
     return <LoadingOverlay />;
