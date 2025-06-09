@@ -136,7 +136,7 @@ export default function EditQuiz() {
         // Optionally redirect after a delay
         // setTimeout(() => router.push('/admin/quizzes'), 1500);
       } else {
-        let errorMsg = 'Failed to update quiz';
+        let errorMsg = 'Failed to update quiz - The quiz is already in use. Please create a copy of the quiz and make changes.';
         try {
           const data = await response.json();
           if (data && data.error) errorMsg = data.error;
@@ -147,7 +147,7 @@ export default function EditQuiz() {
         setError(errorMsg);
       }
     } catch (error) {
-      setError('Failed to update quiz');
+      setError('Failed to update quiz - The quiz is already in use. Please create a copy of the quiz and make changes.');
     } finally {
       setSubmitting(false);
     }

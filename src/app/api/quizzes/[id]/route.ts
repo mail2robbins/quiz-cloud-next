@@ -17,6 +17,11 @@ export async function GET(
       where: { id: params.id },
       include: {
         category: true,
+        questions: {
+          include: {
+            options: true
+          }
+        },
         _count: {
           select: {
             questions: true,
@@ -49,35 +54,83 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { isActive } = body;
 
-    if (typeof isActive !== 'boolean') {
+    // If only isActive is present, handle status update
+    if (Object.keys(body).length === 1 && body.isActive !== undefined) {
+      if (typeof body.isActive !== 'boolean') {
+        return NextResponse.json(
+          { error: 'isActive must be a boolean value' },
+          { status: 400 }
+        );
+      }
+      // First check if the quiz exists
+      const existingQuiz = await prisma.quiz.findUnique({
+        where: { id: params.id },
+      });
+      if (!existingQuiz) {
+        return NextResponse.json(
+          { error: 'Quiz not found' },
+          { status: 404 }
+        );
+      }
+      // Update the quiz status
+      const updatedQuiz = await prisma.quiz.update({
+        where: { id: params.id },
+        data: {
+          isActive: body.isActive,
+        },
+        include: {
+          category: true,
+          _count: {
+            select: {
+              questions: true,
+              attempts: true,
+            },
+          },
+        },
+      });
+      return NextResponse.json(updatedQuiz);
+    }
+
+    // Otherwise, handle full quiz update
+    const { title, description, category, timeLimit, questions } = body;
+    if (!title || !category || !Array.isArray(questions)) {
       return NextResponse.json(
-        { error: 'isActive must be a boolean value' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // First check if the quiz exists
-    const existingQuiz = await prisma.quiz.findUnique({
-      where: { id: params.id },
-    });
-
-    if (!existingQuiz) {
-      return NextResponse.json(
-        { error: 'Quiz not found' },
-        { status: 404 }
-      );
+    // Find or create the category
+    let categoryRecord = await prisma.category.findFirst({ where: { name: category } });
+    if (!categoryRecord) {
+      categoryRecord = await prisma.category.create({ data: { name: category } });
     }
 
-    // Update the quiz status
+    // Update the quiz
     const updatedQuiz = await prisma.quiz.update({
       where: { id: params.id },
       data: {
-        isActive: isActive,
+        title,
+        description,
+        categoryId: categoryRecord.id,
+        timeLimit,
+        questions: {
+          deleteMany: {}, // Remove all old questions/options
+          create: questions.map((q: any) => ({
+            text: q.text,
+            options: {
+              create: q.options.map((o: any) => ({
+                text: o.text,
+                isCorrect: o.isCorrect
+              }))
+            }
+          }))
+        }
       },
       include: {
         category: true,
+        questions: { include: { options: true } },
         _count: {
           select: {
             questions: true,
@@ -86,12 +139,11 @@ export async function PATCH(
         },
       },
     });
-
     return NextResponse.json(updatedQuiz);
   } catch (error) {
     console.error('Error updating quiz:', error);
     return NextResponse.json(
-      { error: 'Failed to update quiz', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to update quiz - The quiz is already in use. Please create a copy of the quiz and make changes.', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
