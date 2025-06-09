@@ -12,6 +12,7 @@ interface QuizAttempt {
     questions: Array<{
       id: string;
       text: string;
+      explanation: string | null;
       order: number;
       options: Array<{
         id: string;
@@ -134,6 +135,35 @@ export default function HistoryDetailPage({
                   Question {index + 1}
                 </h3>
                 <p className="mb-4">{question.text}</p>
+                
+                {/* All Options */}
+                <div className="space-y-2 mb-4">
+                  <div className="font-medium mb-2">All Options:</div>
+                  {question.options.map((option) => (
+                    <div
+                      key={option.id}
+                      className={`p-3 rounded-lg border ${
+                        option.id === selectedOptionId
+                          ? option.isCorrect
+                            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                            : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                          : option.isCorrect
+                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                          : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800'
+                      }`}
+                    >
+                      <div className="flex items-center">
+                        <span className="mr-2">
+                          {option.id === selectedOptionId && '✓ '}
+                          {option.isCorrect && !option.selected && '✓ '}
+                        </span>
+                        {option.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Selected and Correct Answers */}
                 <div className="space-y-2">
                   {selectedOption && (
                     <div
@@ -151,6 +181,12 @@ export default function HistoryDetailPage({
                     <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                       <div className="font-medium">Correct Answer:</div>
                       <div>{correctOption.text}</div>
+                    </div>
+                  )}
+                  {question.explanation && (
+                    <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                      <div className="font-medium">Explanation:</div>
+                      <div>{question.explanation}</div>
                     </div>
                   )}
                 </div>

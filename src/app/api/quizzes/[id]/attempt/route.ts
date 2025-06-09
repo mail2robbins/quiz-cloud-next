@@ -2,6 +2,28 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
+
+interface Option {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  selected?: boolean;
+}
+
+interface Question {
+  id: string;
+  text: string;
+  explanation?: string;
+  options: Option[];
+  order: number;
+}
+
+interface AttemptDetails {
+  questions: Question[];
+  answers: Record<string, string>;
+  startedAt: string;
+}
 
 export async function POST(
   request: Request,
@@ -78,24 +100,34 @@ export async function POST(
 
     // Create the quiz attempt
     console.log('Creating quiz attempt...');
-    const attemptData = {
-      userId: user.id, // Use the verified user ID
-      quizId: params.id,
-      score: 0,
-      timeSpent: 0,
-      attemptDetails: {
-        questions: shuffledQuestions.map((question, index) => ({
+    const attemptDetails: AttemptDetails = {
+      questions: shuffledQuestions.map((question, index) => {
+        // Shuffle options for each question
+        const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5);
+        
+        return {
           id: question.id,
           text: question.text,
+          explanation: question.explanation || undefined,
           order: index,
-          options: question.options.map(option => ({
+          options: shuffledOptions.map(option => ({
             id: option.id,
             text: option.text,
             isCorrect: option.isCorrect,
             selected: false
           }))
-        }))
-      }
+        };
+      }),
+      answers: {},
+      startedAt: new Date().toISOString()
+    };
+
+    const attemptData = {
+      userId: user.id,
+      quizId: params.id,
+      score: 0,
+      timeSpent: 0,
+      attemptDetails: attemptDetails as unknown as Prisma.JsonObject
     };
     console.log('Attempt data:', JSON.stringify(attemptData, null, 2));
 
@@ -104,11 +136,13 @@ export async function POST(
     });
     console.log('Quiz attempt created:', attempt.id);
 
+    // Return the same shuffled questions and options to the client
     const response = { 
       attemptId: attempt.id,
-      questions: shuffledQuestions.map(q => ({
+      questions: attemptDetails.questions.map(q => ({
         id: q.id,
         text: q.text,
+        explanation: q.explanation,
         options: q.options.map(o => ({
           id: o.id,
           text: o.text,
