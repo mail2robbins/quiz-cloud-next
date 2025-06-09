@@ -2,86 +2,97 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
+import { QuizAttempt } from '@prisma/client';
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session?.user) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const timeFrame = searchParams.get('timeFrame') || 'all';
 
-    const startDate = new Date();
-    if (timeFrame === 'week') {
-      startDate.setDate(startDate.getDate() - 7);
-    } else if (timeFrame === 'month') {
-      startDate.setMonth(startDate.getMonth() - 1);
-    } else {
-      startDate.setFullYear(2000); // All time
+    // Calculate the date range based on timeFrame
+    const now = new Date();
+    let startDate: Date | undefined;
+
+    switch (timeFrame) {
+      case 'week':
+        startDate = new Date(now.setDate(now.getDate() - 7));
+        break;
+      case 'month':
+        startDate = new Date(now.setMonth(now.getMonth() - 1));
+        break;
+      default:
+        startDate = undefined; // 'all' time frame
     }
 
-    const leaderboard = await prisma.user.findMany({
+    // Get all users with their quiz attempts
+    const users = await prisma.user.findMany({
       where: {
-        quizAttempts: {
+        quizAttempts: startDate ? {
           some: {
-            startedAt: {
+            updatedAt: {
               gte: startDate,
             },
           },
-        },
+        } : undefined,
       },
       select: {
         id: true,
         name: true,
         image: true,
         quizAttempts: {
-          where: {
-            startedAt: {
+          where: startDate ? {
+            updatedAt: {
               gte: startDate,
             },
-          },
+          } : undefined,
           select: {
             score: true,
+            updatedAt: true,
           },
         },
       },
-      orderBy: {
-        quizAttempts: {
-          _count: 'desc',
-        },
-      },
-      take: 100,
     });
 
-    const formattedLeaderboard = leaderboard
-      .map((user) => {
-        const totalScore = user.quizAttempts.reduce(
-          (sum, attempt) => sum + attempt.score,
-          0
-        );
-        const averageScore =
-          totalScore / (user.quizAttempts.length || 1);
+    // Calculate leaderboard entries
+    const leaderboard = users
+      .map(user => {
+        const attempts = user.quizAttempts;
+        const totalScore = attempts.reduce((sum: number, attempt: { score: number }) => sum + attempt.score, 0);
+        const averageScore = attempts.length > 0 ? totalScore / attempts.length : 0;
+        const latestAttempt = attempts.length > 0 
+          ? attempts.reduce((latest: { updatedAt: Date }, current: { updatedAt: Date }) => 
+              current.updatedAt > latest.updatedAt ? current : latest
+            ).updatedAt
+          : new Date();
 
         return {
           user: {
             id: user.id,
-            name: user.name,
+            name: user.name || 'Anonymous',
             image: user.image,
           },
           totalScore,
-          quizzesTaken: user.quizAttempts.length,
+          quizzesTaken: attempts.length,
           averageScore,
+          date: latestAttempt.toISOString(),
         };
       })
-      .sort((a, b) => b.averageScore - a.averageScore)
-      .slice(0, 10);
+      .filter(entry => entry.quizzesTaken > 0) // Only include users who have taken quizzes
+      .sort((a, b) => b.averageScore - a.averageScore) // Sort by average score
+      .slice(0, 100); // Limit to top 100
 
-    return NextResponse.json(formattedLeaderboard);
+    return NextResponse.json(leaderboard);
   } catch (error) {
     console.error('Error fetching leaderboard:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch leaderboard', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 } 
