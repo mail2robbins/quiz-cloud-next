@@ -89,10 +89,10 @@ export default function Home() {
             {featuredQuizzes.map((quiz) => (
               <div
                 key={quiz.id}
-                className="bg-white overflow-hidden shadow rounded-lg"
+                className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg"
               >
                 <div className="px-4 py-5 sm:p-6">
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                     {quiz.title}
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">
@@ -121,9 +121,9 @@ export default function Home() {
         </div>
       )}
 
-      <div className="mt-12 bg-white shadow sm:rounded-lg">
+      <div className="mt-12 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
+          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
             Why Choose Our Quiz App?
           </h3>
           <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -144,7 +144,7 @@ export default function Home() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h4 className="text-sm font-medium text-gray-900">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Instant Feedback
                 </h4>
                 <p className="mt-1 text-sm text-gray-500">
@@ -169,7 +169,7 @@ export default function Home() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h4 className="text-sm font-medium text-gray-900">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Time Management
                 </h4>
                 <p className="mt-1 text-sm text-gray-500">
@@ -194,7 +194,7 @@ export default function Home() {
                 </svg>
               </div>
               <div className="ml-3">
-                <h4 className="text-sm font-medium text-gray-900">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   Track Progress
                 </h4>
                 <p className="mt-1 text-sm text-gray-500">
