@@ -127,6 +127,8 @@ export async function POST(
       quizId: params.id,
       score: 0,
       timeSpent: 0,
+      totalQuestions: questionCount,
+      correctAnswers: 0,
       attemptDetails: attemptDetails as unknown as Prisma.JsonObject
     };
     console.log('Attempt data:', JSON.stringify(attemptData, null, 2));

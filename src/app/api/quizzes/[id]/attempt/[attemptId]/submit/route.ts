@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma, QuizAttempt } from '@prisma/client';
 
 interface Option {
   id: string;
@@ -38,8 +38,7 @@ export async function POST(
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const body = await request.json();
-    const { answers, timeSpent } = body;
+    const { answers, timeSpent } = await request.json();
 
     // Get the quiz attempt
     const attempt = await prisma.quizAttempt.findUnique({
@@ -66,51 +65,75 @@ export async function POST(
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    // Calculate score and prepare attempt details
-    let score = 0;
-    const currentDetails = attempt.attemptDetails as unknown as AttemptDetails;
-    const attemptDetails = {
-      ...currentDetails,
-      questions: currentDetails.questions.map(question => {
-        const selectedOptionId = answers[question.id];
-        const selectedOption = question.options.find(opt => opt.id === selectedOptionId);
-        const isCorrect = selectedOption?.isCorrect || false;
-        
-        if (isCorrect) {
-          score++;
-        }
+    // Create Answer records for each question
+    const answerPromises = Object.entries(answers).map(async ([questionId, selectedOptionId]) => {
+      const question = attempt.quiz.questions.find(q => q.id === questionId);
+      const selectedOption = question?.options.find(o => o.id === selectedOptionId);
+      
+      if (!question || !selectedOption) {
+        throw new Error(`Invalid question or option: ${questionId}, ${selectedOptionId}`);
+      }
 
-        return {
-          ...question,
-          options: question.options.map(option => ({
-            ...option,
-            selected: option.id === selectedOptionId
-          })),
-          selectedAnswer: selectedOptionId,
-          correctAnswer: question.options.find(opt => opt.isCorrect)?.id,
-          isCorrect
-        };
-      }),
+      return prisma.answer.create({
+        data: {
+          quizAttemptId: attempt.id,
+          questionId,
+          selectedOptionId: selectedOptionId as string,
+          isCorrect: selectedOption.isCorrect
+        }
+      });
+    });
+
+    // Wait for all answers to be created
+    const createdAnswers = await Promise.all(answerPromises);
+
+    // Calculate total questions and correct answers
+    const totalQuestions = createdAnswers.length;
+    const correctAnswers = createdAnswers.filter(answer => answer.isCorrect).length;
+
+    // Calculate score
+    const score = totalQuestions > 0 
+      ? Math.round((correctAnswers / totalQuestions) * 100)
+      : 0;
+
+    // Get current attempt details
+    const currentDetails = attempt.attemptDetails as unknown as AttemptDetails;
+
+    // Update attempt details with selected options
+    const updatedDetails: AttemptDetails = {
+      ...currentDetails,
+      questions: currentDetails.questions.map(question => ({
+        ...question,
+        options: question.options.map(option => ({
+          ...option,
+          selected: answers[question.id] === option.id
+        }))
+      })),
       answers,
       completedAt: new Date().toISOString()
-    } as Prisma.JsonObject;
+    };
 
-    // Update the attempt
+    // Update the attempt with the calculated values and updated details
     const updatedAttempt = await prisma.quizAttempt.update({
       where: { id: params.attemptId },
       data: {
         score,
         timeSpent,
-        attemptDetails
+        totalQuestions,
+        correctAnswers,
+        attemptDetails: updatedDetails as unknown as Prisma.JsonObject
+      } as Prisma.QuizAttemptUpdateInput,
+      include: {
+        answers: {
+          include: {
+            question: true,
+            selectedOption: true
+          }
+        }
       }
     });
 
-    return NextResponse.json({
-      id: updatedAttempt.id,
-      score,
-      totalQuestions: currentDetails.questions.length,
-      timeSpent
-    });
+    return NextResponse.json(updatedAttempt);
   } catch (error) {
     console.error('Error submitting quiz:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

@@ -118,6 +118,8 @@ model QuizAttempt {
   userId         String
   score          Int
   timeSpent      Int
+  totalQuestions Int      // Total number of questions in this attempt
+  correctAnswers Int      // Number of correct answers in this attempt
   attemptDetails Json     // Stores complete attempt history including questions and answers
   answers        Answer[]
   createdAt      DateTime @default(now())

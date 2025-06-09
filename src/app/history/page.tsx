@@ -12,6 +12,8 @@ interface QuizAttempt {
     title: string;
   };
   score: number;
+  totalQuestions: number;
+  correctAnswers: number;
   createdAt: string;
   timeSpent: number;
 }
@@ -83,6 +85,9 @@ export default function QuizHistory() {
                     Quiz Title
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Questions
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Score
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -103,6 +108,9 @@ export default function QuizHistory() {
                       >
                         {attempt.quiz.title}
                       </Link>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {attempt.totalQuestions}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {attempt.score}%

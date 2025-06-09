@@ -7,6 +7,8 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 interface QuizAttempt {
   id: string;
   score: number;
+  totalQuestions: number;
+  correctAnswers: number;
   timeSpent: number;
   attemptDetails: {
     questions: Array<{
@@ -84,7 +86,6 @@ export default function HistoryDetailPage({
     );
   }
 
-  const percentage = Math.round((attempt.score / attempt.attemptDetails.questions.length) * 100);
   const minutes = Math.floor(attempt.timeSpent / 60);
   const seconds = attempt.timeSpent % 60;
 
@@ -100,13 +101,13 @@ export default function HistoryDetailPage({
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {attempt.score}/{attempt.attemptDetails.questions.length}
+                {attempt.correctAnswers}/{attempt.totalQuestions}
               </div>
               <div className="text-sm text-gray-500">Score</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {percentage}%
+                {attempt.score}%
               </div>
               <div className="text-sm text-gray-500">Percentage</div>
             </div>

@@ -22,7 +22,18 @@ export async function GET(
       include: {
         quiz: {
           include: {
-            category: true
+            category: true,
+            questions: {
+              include: {
+                options: true
+              }
+            }
+          }
+        },
+        answers: {
+          include: {
+            question: true,
+            selectedOption: true
           }
         }
       }
@@ -32,7 +43,37 @@ export async function GET(
       return new NextResponse('Quiz attempt not found', { status: 404 });
     }
 
-    return NextResponse.json(attempt);
+    // Create a map of selected options for quick lookup
+    const selectedOptionsMap = attempt.answers.reduce((acc, answer) => {
+      acc[answer.questionId] = answer.selectedOptionId;
+      return acc;
+    }, {} as Record<string, string>);
+
+    // Format the response to include attempt details
+    const formattedAttempt = {
+      ...attempt,
+      attemptDetails: {
+        questions: attempt.quiz.questions.map(question => ({
+          id: question.id,
+          text: question.text,
+          explanation: question.explanation,
+          order: 0,
+          options: question.options.map(option => ({
+            id: option.id,
+            text: option.text,
+            isCorrect: option.isCorrect,
+            selected: selectedOptionsMap[question.id] === option.id
+          }))
+        })),
+        answers: attempt.answers.reduce((acc, answer) => ({
+          ...acc,
+          [answer.question.id]: answer.selectedOption.id
+        }), {}),
+        submittedAt: attempt.updatedAt.toISOString()
+      }
+    };
+
+    return NextResponse.json(formattedAttempt);
   } catch (error) {
     console.error('Error fetching attempt:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

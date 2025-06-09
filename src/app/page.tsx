@@ -108,7 +108,7 @@ export default function Home() {
                   </div>
                   <div className="mt-6">
                     <Link
-                      href={`/quizzes/${quiz.id}`}
+                      href={`/quizzes/${quiz.id}/start`}
                       className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
                     >
                       Take Quiz
