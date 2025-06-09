@@ -205,6 +205,25 @@ export default function AdminQuizzes() {
                         >
                           {quiz.isActive ? 'Deactivate' : 'Activate'}
                         </button>
+                        <button
+                          onClick={async () => {
+                            if (!confirm('Are you sure you want to copy this quiz?')) return;
+                            try {
+                              const res = await fetch(`/api/admin/quizzes/${quiz.id}/copy`, { method: 'POST' });
+                              if (res.ok) {
+                                const data = await res.json();
+                                router.push(`/admin/quizzes/${data.newQuizId}/edit`);
+                              } else {
+                                alert('Failed to copy quiz');
+                              }
+                            } catch (e) {
+                              alert('Failed to copy quiz');
+                            }
+                          }}
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                          Copy
+                        </button>
                       </div>
                     </td>
                   </tr>
