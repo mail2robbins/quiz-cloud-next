@@ -92,52 +92,20 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'ADMIN') {
+
+  if (!session?.user?.role || session.user.role !== 'ADMIN') {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  const { id } = params;
   try {
-    // First delete all related records
-    await prisma.answer.deleteMany({
-      where: {
-        question: {
-          quizId: id
-        }
-      }
+    // Soft delete by setting isActive to false
+    const quiz = await prisma.quiz.update({
+      where: { id: params.id },
+      data: { isActive: false },
     });
 
-    await prisma.option.deleteMany({
-      where: {
-        question: {
-          quizId: id
-        }
-      }
-    });
-
-    await prisma.question.deleteMany({
-      where: {
-        quizId: id
-      }
-    });
-
-    await prisma.quizAttempt.deleteMany({
-      where: {
-        quizId: id
-      }
-    });
-
-    // Finally delete the quiz
-    await prisma.quiz.delete({
-      where: { id }
-    });
-
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json(quiz);
   } catch (error) {
-    console.error('Error deleting quiz:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete quiz - This quiz is already in use', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    return new NextResponse('Internal error', { status: 500 });
   }
 } 

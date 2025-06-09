@@ -75,6 +75,7 @@ model Quiz {
   createdBy   String
   isPublic    Boolean       @default(true)
   timeLimit   Int           @default(30)
+  isActive    Boolean       @default(true)
 }
 
 model Category {

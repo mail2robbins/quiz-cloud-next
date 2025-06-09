@@ -57,23 +57,15 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return new NextResponse('Unauthorized', { status: 401 });
-  }
+  const { searchParams } = new URL(request.url);
+  const category = searchParams.get('category');
 
   try {
-    const { searchParams } = new URL(req.url);
-    const category = searchParams.get('category');
-
     const quizzes = await prisma.quiz.findMany({
       where: {
-        OR: [
-          { isPublic: true },
-          { createdBy: session.user.id },
-        ],
+        isActive: true, // Only show active quizzes
         ...(category ? { category: { name: category } } : {}),
       },
       include: {
@@ -81,18 +73,13 @@ export async function GET(req: Request) {
         _count: {
           select: {
             questions: true,
-            attempts: true,
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     });
 
     return NextResponse.json(quizzes);
   } catch (error) {
-    console.error('Error fetching quizzes:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return new NextResponse('Internal error', { status: 500 });
   }
 } 
