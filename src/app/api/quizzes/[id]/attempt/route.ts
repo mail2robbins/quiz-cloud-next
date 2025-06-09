@@ -92,10 +92,16 @@ export async function POST(
     }
     console.log('Found questions:', allQuestions.length);
 
-    // Shuffle the questions array
-    const shuffledQuestions = allQuestions
-      .sort(() => Math.random() - 0.5)
-      .slice(0, questionCount);
+    // Shuffle the questions array and ensure uniqueness by id
+    const shuffledQuestions = [];
+    const seenIds = new Set();
+    for (const q of allQuestions.sort(() => Math.random() - 0.5)) {
+      if (!seenIds.has(q.id)) {
+        shuffledQuestions.push(q);
+        seenIds.add(q.id);
+      }
+      if (shuffledQuestions.length === questionCount) break;
+    }
     console.log('Selected questions:', shuffledQuestions.length);
 
     // Create the quiz attempt
