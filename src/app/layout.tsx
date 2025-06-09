@@ -9,8 +9,11 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Quiz App',
-  description: 'A modern quiz application',
+  title: 'QuizCloud',
+  description: 'A journey of knowledge and discovery',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default async function RootLayout({
