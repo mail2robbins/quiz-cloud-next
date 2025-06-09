@@ -8,16 +8,22 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
     const quiz = await prisma.quiz.findUnique({
       where: { id: params.id },
       include: {
         category: true,
-        questions: {
-          include: {
-            options: true,
-          },
-        },
-      },
+        _count: {
+          select: {
+            questions: true,
+            attempts: true
+          }
+        }
+      }
     });
 
     if (!quiz) {
@@ -26,7 +32,8 @@ export async function GET(
 
     return NextResponse.json(quiz);
   } catch (error) {
-    return new NextResponse('Internal error', { status: 500 });
+    console.error('Error fetching quiz:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
 

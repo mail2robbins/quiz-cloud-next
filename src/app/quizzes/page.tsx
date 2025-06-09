@@ -121,7 +121,7 @@ export default function QuizList() {
             </div>
             <div className="px-4 py-4 sm:px-6 border-t border-gray-200 dark:border-gray-700">
               <Link
-                href={`/quizzes/${quiz.id}`}
+                href={`/quizzes/${quiz.id}/start`}
                 className="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
               >
                 Start Quiz
