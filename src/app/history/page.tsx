@@ -98,7 +98,7 @@ export default function QuizHistory() {
                   <tr key={attempt.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       <Link
-                        href={`/quizzes/${attempt.quiz.id}`}
+                        href={`/history/${attempt.id}`}
                         className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300"
                       >
                         {attempt.quiz.title}
