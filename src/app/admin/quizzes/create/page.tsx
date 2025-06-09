@@ -54,11 +54,25 @@ export default function CreateQuiz() {
   const updateOption = (
     questionIndex: number,
     optionIndex: number,
-    text: string,
-    isCorrect: boolean
+    text: string | undefined,
+    isCorrect: boolean | undefined
   ) => {
     const newQuestions = [...questions];
-    newQuestions[questionIndex].options[optionIndex] = { text, isCorrect };
+    const currentOption = newQuestions[questionIndex].options[optionIndex];
+    
+    if (text !== undefined) {
+      currentOption.text = text;
+    }
+    
+    if (isCorrect !== undefined) {
+      // Set all options in this question to false
+      newQuestions[questionIndex].options.forEach(opt => {
+        opt.isCorrect = false;
+      });
+      // Set the selected option to true
+      currentOption.isCorrect = true;
+    }
+    
     setQuestions(newQuestions);
   };
 
@@ -238,7 +252,7 @@ export default function CreateQuiz() {
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Questions</h2>
           {questions.map((question, questionIndex) => (
-            <div key={questionIndex} className="border p-4 rounded-md">
+            <div key={questionIndex} className="border p-4 rounded-lg">
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                   Question {questionIndex + 1}
@@ -252,68 +266,44 @@ export default function CreateQuiz() {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {question.options.map((option, optionIndex) => (
-                  <div key={optionIndex} className="flex items-center space-x-2">
+                  <div key={optionIndex} className="flex items-center gap-2">
                     <input
                       type="text"
                       value={option.text}
-                      onChange={(e) =>
-                        updateOption(
-                          questionIndex,
-                          optionIndex,
-                          e.target.value,
-                          option.isCorrect
-                        )
-                      }
-                      className="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      onChange={(e) => updateOption(questionIndex, optionIndex, e.target.value, undefined)}
+                      className="flex-1 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                       placeholder={`Option ${optionIndex + 1}`}
+                      required
                     />
-                    <label className="flex items-center space-x-2">
+                    <label className="flex items-center gap-2">
                       <input
                         type="radio"
                         name={`correct-${questionIndex}`}
                         checked={option.isCorrect}
-                        onChange={() => {
-                          // Set all options to false first
-                          question.options.forEach((_, idx) => {
-                            updateOption(
-                              questionIndex,
-                              idx,
-                              option.text,
-                              false
-                            );
-                          });
-                          // Then set the selected option to true
-                          updateOption(
-                            questionIndex,
-                            optionIndex,
-                            option.text,
-                            true
-                          );
-                        }}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                        onChange={() => updateOption(questionIndex, optionIndex, undefined, true)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                       />
-                      <span className="text-sm text-gray-600 dark:text-gray-300">
-                        Correct
-                      </span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Correct</span>
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => removeOption(questionIndex, optionIndex)}
-                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1"
-                      title="Remove option"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {question.options.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeOption(questionIndex, optionIndex)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    )}
                   </div>
                 ))}
                 <button
                   type="button"
                   onClick={() => addOption(questionIndex)}
-                  className="text-indigo-600 hover:text-indigo-500"
+                  className="text-sm text-indigo-600 hover:text-indigo-500"
                 >
-                  Add Option
+                  + Add Option
                 </button>
               </div>
             </div>
@@ -323,14 +313,15 @@ export default function CreateQuiz() {
             onClick={addQuestion}
             className="text-indigo-600 hover:text-indigo-500"
           >
-            Add Question
+            + Add Question
           </button>
         </div>
 
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            disabled={submitting}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
           >
             Create Quiz
           </button>
