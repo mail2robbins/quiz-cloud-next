@@ -97,9 +97,9 @@ export default function QuizList() {
         {quizzes.map((quiz) => (
           <div
             key={quiz.id}
-            className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg"
+            className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg flex flex-col"
           >
-            <div className="px-4 py-5 sm:p-6">
+            <div className="px-4 py-5 sm:p-6 flex-grow">
               <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {quiz.title}
               </h3>
@@ -109,23 +109,23 @@ export default function QuizList() {
                   {quiz.category.name}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {quiz._count.questions} questions
-                  </span>
-                  <span className="text-gray-300 dark:text-gray-600">•</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {quiz._count.attempts} {quiz._count.attempts === 1 ? 'attempt' : 'attempts'}
-                  </span>
-                </div>
-                <Link
-                  href={`/quizzes/${quiz.id}`}
-                  className="inline-flex items-center px-3 py-1 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50"
-                >
-                  Start Quiz
-                </Link>
+              <div className="mt-4 flex items-center space-x-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {quiz._count.questions} questions
+                </span>
+                <span className="text-gray-300 dark:text-gray-600">•</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {quiz._count.attempts} {quiz._count.attempts === 1 ? 'attempt' : 'attempts'}
+                </span>
               </div>
+            </div>
+            <div className="px-4 py-4 sm:px-6 border-t border-gray-200 dark:border-gray-700">
+              <Link
+                href={`/quizzes/${quiz.id}`}
+                className="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+              >
+                Start Quiz
+              </Link>
             </div>
           </div>
         ))}
