@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LoadingOverlay from '@/components/LoadingOverlay';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
 
 interface Quiz {
   id: string;
@@ -34,6 +35,15 @@ export default function AdminQuizzes() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    message: string;
+    onConfirm: () => void;
+  }>({ open: false, message: '', onConfirm: () => {} });
+  const [alertModal, setAlertModal] = useState<{
+    open: boolean;
+    message: string;
+  }>({ open: false, message: '' });
 
   useEffect(() => {
     if (session?.user?.role !== "ADMIN") {
@@ -64,31 +74,33 @@ export default function AdminQuizzes() {
 
   const handleStatusChange = async (id: string, isActive: boolean) => {
     const action = isActive ? 'activate' : 'deactivate';
-    if (!confirm(`Are you sure you want to ${action} this quiz?`)) {
-      return;
-    }
+    setConfirmModal({
+      open: true,
+      message: `Are you sure you want to ${action} this quiz?`,
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/quizzes/${id}/status`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isActive }),
+          });
 
-    try {
-      const response = await fetch(`/api/quizzes/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ isActive }),
-      });
-
-      if (response.ok) {
-        const updatedQuiz = await response.json();
-        setQuizzes(quizzes.map(quiz => 
-          quiz.id === id ? updatedQuiz : quiz
-        ));
-      } else {
-        const error = await response.json();
-        console.error(`Failed to ${action} quiz:`, error);
+          if (response.ok) {
+            const updatedQuiz = await response.json();
+            setQuizzes(quizzes.map(quiz => 
+              quiz.id === id ? updatedQuiz : quiz
+            ));
+          } else {
+            const error = await response.json();
+            setAlertModal({ open: true, message: `Failed to ${action} quiz: ${error.error || ''}` });
+          }
+        } catch (error) {
+          setAlertModal({ open: true, message: `Error ${action}ing quiz.` });
+        }
       }
-    } catch (error) {
-      console.error(`Error ${action}ing quiz:`, error);
-    }
+    });
   };
 
   if (session?.user?.role !== "ADMIN") {
@@ -127,6 +139,25 @@ export default function AdminQuizzes() {
           ))}
         </select>
       </div>
+      <ConfirmationDialog
+        isOpen={confirmModal.open}
+        onClose={() => setConfirmModal({ ...confirmModal, open: false })}
+        onConfirm={() => {
+          confirmModal.onConfirm();
+          setConfirmModal({ ...confirmModal, open: false });
+        }}
+        title="Confirm Action"
+        message={confirmModal.message}
+      />
+      <ConfirmationDialog
+        isOpen={alertModal.open}
+        onClose={() => setAlertModal({ ...alertModal, open: false })}
+        onConfirm={() => setAlertModal({ ...alertModal, open: false })}
+        title="Notice"
+        message={alertModal.message}
+        confirmText="OK"
+        cancelText=""
+      />
       {quizzes.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-gray-500 dark:text-gray-400">No quizzes found.</div>
@@ -207,18 +238,23 @@ export default function AdminQuizzes() {
                         </button>
                         <button
                           onClick={async () => {
-                            if (!confirm('Are you sure you want to copy this quiz?')) return;
-                            try {
-                              const res = await fetch(`/api/admin/quizzes/${quiz.id}/copy`, { method: 'POST' });
-                              if (res.ok) {
-                                const data = await res.json();
-                                router.push(`/admin/quizzes/${data.newQuizId}/edit`);
-                              } else {
-                                alert('Failed to copy quiz');
+                            setConfirmModal({
+                              open: true,
+                              message: 'Are you sure you want to copy this quiz?',
+                              onConfirm: async () => {
+                                try {
+                                  const res = await fetch(`/api/admin/quizzes/${quiz.id}/copy`, { method: 'POST' });
+                                  if (res.ok) {
+                                    const data = await res.json();
+                                    router.push(`/admin/quizzes/${data.newQuizId}/edit`);
+                                  } else {
+                                    setAlertModal({ open: true, message: 'Failed to copy quiz' });
+                                  }
+                                } catch (e) {
+                                  setAlertModal({ open: true, message: 'Failed to copy quiz' });
+                                }
                               }
-                            } catch (e) {
-                              alert('Failed to copy quiz');
-                            }
+                            });
                           }}
                           className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                         >
