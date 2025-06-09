@@ -91,7 +91,10 @@ export default function QuizAttemptPage({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ answers: selectedOptions }),
+        body: JSON.stringify({ 
+          answers: selectedOptions,
+          timeSpent: 30 * 60 - timeLeft // Calculate time spent in seconds
+        }),
       });
 
       if (!response.ok) {
@@ -99,7 +102,7 @@ export default function QuizAttemptPage({
       }
 
       const result = await response.json();
-      router.push(`/quizzes/${params.id}/results/${result.attemptId}`);
+      router.push(`/quizzes/${params.id}/results/${result.id}`);
     } catch (error) {
       console.error('Error submitting quiz:', error);
       setError('Failed to submit quiz');

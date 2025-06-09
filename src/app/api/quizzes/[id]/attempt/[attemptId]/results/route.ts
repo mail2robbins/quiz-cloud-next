@@ -13,22 +13,13 @@ export async function GET(
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    // Get the quiz attempt with answers
+    // Get the quiz attempt
     const attempt = await prisma.quizAttempt.findUnique({
-      where: {
-        id: params.attemptId,
-        userId: session.user.id,
-        quizId: params.id
-      },
+      where: { id: params.attemptId },
       include: {
-        answers: {
+        quiz: {
           include: {
-            question: {
-              include: {
-                options: true
-              }
-            },
-            selectedOption: true
+            category: true
           }
         }
       }
@@ -38,43 +29,12 @@ export async function GET(
       return new NextResponse('Quiz attempt not found', { status: 404 });
     }
 
-    // Get the correct options for each question
-    const questions = await prisma.question.findMany({
-      where: {
-        quizId: params.id
-      },
-      include: {
-        options: true
-      }
-    });
+    // Verify ownership
+    if (attempt.userId !== session.user.id) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
 
-    // Map the results
-    const results = {
-      attemptId: attempt.id,
-      score: attempt.score,
-      totalQuestions: questions.length,
-      timeSpent: attempt.timeSpent,
-      questions: attempt.answers.map(answer => {
-        const question = questions.find(q => q.id === answer.questionId);
-        const correctOption = question?.options.find(o => o.isCorrect);
-
-        return {
-          id: answer.questionId,
-          text: answer.question.text,
-          selectedOption: {
-            id: answer.selectedOptionId,
-            text: answer.selectedOption.text,
-            isCorrect: answer.isCorrect
-          },
-          correctOption: correctOption ? {
-            id: correctOption.id,
-            text: correctOption.text
-          } : null
-        };
-      })
-    };
-
-    return NextResponse.json(results);
+    return NextResponse.json(attempt);
   } catch (error) {
     console.error('Error fetching quiz results:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
