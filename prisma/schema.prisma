@@ -92,6 +92,7 @@ model Question {
   quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   quizId    String
   text      String
+  explanation String?
   options   Option[]
   answers   Answer[]
   createdAt DateTime @default(now())
