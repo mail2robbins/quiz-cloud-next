@@ -62,25 +62,32 @@ export default function AdminQuizzes() {
     fetchData();
   }, [session, router]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to deactivate this quiz? Users will still be able to view their past attempts.')) {
+  const handleStatusChange = async (id: string, isActive: boolean) => {
+    const action = isActive ? 'activate' : 'deactivate';
+    if (!confirm(`Are you sure you want to ${action} this quiz?`)) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/quizzes/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/quizzes/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isActive }),
       });
 
       if (response.ok) {
+        const updatedQuiz = await response.json();
         setQuizzes(quizzes.map(quiz => 
-          quiz.id === id ? { ...quiz, isActive: false } : quiz
+          quiz.id === id ? updatedQuiz : quiz
         ));
       } else {
-        console.error('Failed to deactivate quiz');
+        const error = await response.json();
+        console.error(`Failed to ${action} quiz:`, error);
       }
     } catch (error) {
-      console.error('Error deactivating quiz:', error);
+      console.error(`Error ${action}ing quiz:`, error);
     }
   };
 
@@ -189,10 +196,14 @@ export default function AdminQuizzes() {
                           Edit
                         </Link>
                         <button
-                          onClick={() => handleDelete(quiz.id)}
-                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          onClick={() => handleStatusChange(quiz.id, !quiz.isActive)}
+                          className={`${
+                            quiz.isActive 
+                              ? 'text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300'
+                              : 'text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300'
+                          }`}
                         >
-                          {quiz.isActive ? 'Deactivate' : 'Delete'}
+                          {quiz.isActive ? 'Deactivate' : 'Activate'}
                         </button>
                       </div>
                     </td>

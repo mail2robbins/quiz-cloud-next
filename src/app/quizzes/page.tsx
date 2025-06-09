@@ -8,8 +8,9 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 interface Quiz {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   category: {
+    id: string;
     name: string;
   };
   _count: {
@@ -108,16 +109,21 @@ export default function QuizList() {
                   {quiz.category.name}
                 </span>
               </div>
-              <div className="mt-4 flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                <span>{quiz._count.questions} questions</span>
-                <span>{quiz._count.attempts} attempts</span>
-              </div>
-              <div className="mt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {quiz._count.questions} questions
+                  </span>
+                  <span className="text-gray-300 dark:text-gray-600">•</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {quiz._count.attempts} {quiz._count.attempts === 1 ? 'attempt' : 'attempts'}
+                  </span>
+                </div>
                 <Link
                   href={`/quizzes/${quiz.id}`}
-                  className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                  className="inline-flex items-center px-3 py-1 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50"
                 >
-                  Take Quiz
+                  Start Quiz
                 </Link>
               </div>
             </div>

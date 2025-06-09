@@ -59,27 +59,40 @@ export async function POST(req: Request) {
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
-  const { searchParams } = new URL(request.url);
-  const category = searchParams.get('category');
+
+  if (!session?.user) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
 
   try {
     const quizzes = await prisma.quiz.findMany({
       where: {
-        isActive: true, // Only show active quizzes
-        ...(category ? { category: { name: category } } : {}),
+        isActive: true,
       },
       include: {
         category: true,
         _count: {
           select: {
             questions: true,
+            attempts: {
+              where: {
+                userId: session.user.id,
+              },
+            },
           },
         },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
 
     return NextResponse.json(quizzes);
   } catch (error) {
-    return new NextResponse('Internal error', { status: 500 });
+    console.error('Error fetching quizzes:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch quizzes', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 } 

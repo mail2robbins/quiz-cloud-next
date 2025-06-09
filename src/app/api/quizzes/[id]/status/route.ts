@@ -3,33 +3,6 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const quiz = await prisma.quiz.findUnique({
-      where: { id: params.id },
-      include: {
-        category: true,
-        questions: {
-          include: {
-            options: true,
-          },
-        },
-      },
-    });
-
-    if (!quiz) {
-      return new NextResponse('Quiz not found', { status: 404 });
-    }
-
-    return NextResponse.json(quiz);
-  } catch (error) {
-    return new NextResponse('Internal error', { status: 500 });
-  }
-}
-
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
@@ -82,33 +55,10 @@ export async function PATCH(
 
     return NextResponse.json(updatedQuiz);
   } catch (error) {
-    console.error('Error updating quiz:', error);
+    console.error('Error updating quiz status:', error);
     return NextResponse.json(
-      { error: 'Failed to update quiz', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to update quiz status', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
-  }
-}
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.role || session.user.role !== 'ADMIN') {
-    return new NextResponse('Unauthorized', { status: 401 });
-  }
-
-  try {
-    // Soft delete by setting isActive to false
-    const quiz = await prisma.quiz.update({
-      where: { id: params.id },
-      data: { isActive: false },
-    });
-
-    return NextResponse.json(quiz);
-  } catch (error) {
-    return new NextResponse('Internal error', { status: 500 });
   }
 } 
