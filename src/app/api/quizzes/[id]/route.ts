@@ -25,6 +25,11 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'ADMIN') {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   const { id } = params;
   try {
     const body = await request.json();
@@ -37,7 +42,12 @@ export async function PATCH(
       create: { name: category },
     });
 
-    // Update quiz and replace all questions/options
+    // First, delete all existing questions and their options
+    await prisma.question.deleteMany({
+      where: { quizId: id }
+    });
+
+    // Then update the quiz with new questions and options
     const quiz = await prisma.quiz.update({
       where: { id },
       data: {
@@ -46,7 +56,6 @@ export async function PATCH(
         categoryId: categoryRecord.id,
         timeLimit,
         questions: {
-          deleteMany: {},
           create: questions.map((q: any) => ({
             text: q.text,
             options: {
@@ -59,7 +68,11 @@ export async function PATCH(
         },
       },
       include: {
-        questions: { include: { options: true } },
+        questions: {
+          include: {
+            options: true,
+          },
+        },
         category: true,
       },
     });
@@ -67,7 +80,10 @@ export async function PATCH(
     return NextResponse.json(quiz);
   } catch (error) {
     console.error('Error updating quiz:', error);
-    return NextResponse.json({ error: 'Failed to update quiz' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to update quiz - This quiz is already in use', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -76,8 +92,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  // Logic to delete the quiz
-  // For example, delete from your database
-  // await prisma.quiz.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+  try {
+    // Delete the quiz from the database
+    await prisma.quiz.delete({
+      where: { id },
+    });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    return NextResponse.json({ error: 'Failed to delete quiz - This quiz is already in use' }, { status: 500 });
+  }
 } 
