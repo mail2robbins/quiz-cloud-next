@@ -32,6 +32,7 @@ export default function EditQuiz() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -91,9 +92,21 @@ export default function EditQuiz() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
+    // Check if all questions have a correct answer
+    const questionsWithoutCorrectAnswer = questions.filter(
+      (q) => !q.options.some((o) => o.isCorrect)
+    );
+    if (questionsWithoutCorrectAnswer.length > 0) {
+      setModalMessage(`Please select a correct answer for all questions.`);
+      setSubmitting(false);
+      return;
+    }
+
     setError('');
     setSuccess('');
-    setSubmitting(true);
     let categoryName = '';
     if (categoryMode === 'new' && newCategoryName.trim()) {
       categoryName = newCategoryName.trim();
@@ -218,6 +231,19 @@ export default function EditQuiz() {
       <h1 className="text-3xl font-bold mb-6">Edit Quiz</h1>
       {success && <div className="mb-4 text-green-600 dark:text-green-400">{success}</div>}
       {error && <div className="mb-4 text-red-500">{error}</div>}
+      {modalMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <p className="text-lg font-semibold mb-4">{modalMessage}</p>
+            <button
+              onClick={() => setModalMessage(null)}
+              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Title</label>

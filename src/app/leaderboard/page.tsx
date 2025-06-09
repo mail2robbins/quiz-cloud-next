@@ -84,7 +84,7 @@ export default function Leaderboard() {
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
               <th
                 scope="col"
@@ -118,7 +118,7 @@ export default function Leaderboard() {
               </th>
             </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
               {leaderboard.map((entry, index) => (
                 <tr
                 key={entry.user.id}
