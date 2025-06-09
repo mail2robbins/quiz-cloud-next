@@ -21,6 +21,12 @@ export async function GET(
           include: {
             category: true
           }
+        },
+        answers: {
+          include: {
+            question: true,
+            selectedOption: true
+          }
         }
       }
     });
@@ -34,7 +40,18 @@ export async function GET(
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    return NextResponse.json(attempt);
+    // Use only the questions from attemptDetails
+    const attemptDetails = attempt.attemptDetails as any;
+
+    const formattedAttempt = {
+      ...attempt,
+      attemptDetails: {
+        ...attemptDetails,
+        // questions: attemptDetails.questions (already correct subset)
+      }
+    };
+
+    return NextResponse.json(formattedAttempt);
   } catch (error) {
     console.error('Error fetching quiz results:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

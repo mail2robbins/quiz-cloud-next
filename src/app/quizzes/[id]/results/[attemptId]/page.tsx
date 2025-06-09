@@ -7,21 +7,21 @@ import LoadingOverlay from '@/components/LoadingOverlay';
 interface QuizAttempt {
   id: string;
   score: number;
+  totalQuestions: number;
+  correctAnswers: number;
   timeSpent: number;
   attemptDetails: {
     questions: Array<{
       id: string;
       text: string;
       explanation: string | null;
+      order: number;
       options: Array<{
         id: string;
         text: string;
         isCorrect: boolean;
         selected: boolean;
       }>;
-      selectedAnswer: string;
-      correctAnswer: string;
-      isCorrect: boolean;
     }>;
     answers: Record<string, string>;
     completedAt: string;
@@ -86,7 +86,6 @@ export default function QuizResultsPage({
     );
   }
 
-  const percentage = Math.round((attempt.score / attempt.attemptDetails.questions.length) * 100);
   const minutes = Math.floor(attempt.timeSpent / 60);
   const seconds = attempt.timeSpent % 60;
 
@@ -102,13 +101,13 @@ export default function QuizResultsPage({
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {attempt.score}/{attempt.attemptDetails.questions.length}
+                {attempt.correctAnswers}/{attempt.totalQuestions}
               </div>
               <div className="text-sm text-gray-500">Score</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {percentage}%
+                {attempt.totalQuestions > 0 ? Math.round((attempt.correctAnswers / attempt.totalQuestions) * 100) : 0}%
               </div>
               <div className="text-sm text-gray-500">Percentage</div>
             </div>
@@ -140,7 +139,7 @@ export default function QuizResultsPage({
                   <div
                     key={option.id}
                     className={`p-3 rounded-lg border ${
-                      option.id === question.selectedAnswer
+                      option.selected
                         ? option.isCorrect
                           ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
                           : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
@@ -151,8 +150,8 @@ export default function QuizResultsPage({
                   >
                     <div className="flex items-center">
                       <span className="mr-2">
-                        {option.id === question.selectedAnswer && '✓ '}
-                        {option.isCorrect && option.id !== question.selectedAnswer && '✓ '}
+                        {option.selected && '✓ '}
+                        {option.isCorrect && !option.selected && '✓ '}
                       </span>
                       {option.text}
                     </div>
@@ -162,24 +161,22 @@ export default function QuizResultsPage({
 
               {/* Selected and Correct Answers */}
               <div className="space-y-2">
-                <div
-                  className={`p-3 rounded-lg ${
-                    question.isCorrect
-                      ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                      : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-                  }`}
-                >
-                  <div className="font-medium">Your Answer:</div>
-                  <div>
-                    {question.options.find(o => o.id === question.selectedAnswer)?.text}
+                {question.options.some(o => o.selected) && (
+                  <div
+                    className={`p-3 rounded-lg ${
+                      question.options.find(o => o.selected)?.isCorrect
+                        ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                        : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                    }`}
+                  >
+                    <div className="font-medium">Your Answer:</div>
+                    <div>{question.options.find(o => o.selected)?.text}</div>
                   </div>
-                </div>
-                {!question.isCorrect && (
+                )}
+                {question.options.some(o => o.selected) && !question.options.find(o => o.selected)?.isCorrect && (
                   <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                     <div className="font-medium">Correct Answer:</div>
-                    <div>
-                      {question.options.find(o => o.id === question.correctAnswer)?.text}
-                    </div>
+                    <div>{question.options.find(o => o.isCorrect)?.text}</div>
                   </div>
                 )}
                 {question.explanation && (

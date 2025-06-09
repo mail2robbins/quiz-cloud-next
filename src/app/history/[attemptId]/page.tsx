@@ -107,7 +107,7 @@ export default function HistoryDetailPage({
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {attempt.score}%
+                {attempt.totalQuestions > 0 ? Math.round((attempt.correctAnswers / attempt.totalQuestions) * 100) : 0}%
               </div>
               <div className="text-sm text-gray-500">Percentage</div>
             </div>
@@ -122,78 +122,72 @@ export default function HistoryDetailPage({
 
         {/* Questions Review */}
         <div className="space-y-6">
-          {attempt.attemptDetails.questions.map((question, index) => {
-            const selectedOptionId = attempt.attemptDetails.answers[question.id];
-            const selectedOption = question.options.find(o => o.id === selectedOptionId);
-            const correctOption = question.options.find(o => o.isCorrect);
-
-            return (
-              <div
-                key={question.id}
-                className="bg-white dark:bg-gray-800 shadow rounded-lg p-6"
-              >
-                <h3 className="text-lg font-semibold mb-4">
-                  Question {index + 1}
-                </h3>
-                <p className="mb-4">{question.text}</p>
-                
-                {/* All Options */}
-                <div className="space-y-2 mb-4">
-                  <div className="font-medium mb-2">All Options:</div>
-                  {question.options.map((option) => (
-                    <div
-                      key={option.id}
-                      className={`p-3 rounded-lg border ${
-                        option.id === selectedOptionId
-                          ? option.isCorrect
-                            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                            : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-                          : option.isCorrect
+          {attempt.attemptDetails.questions.map((question, index) => (
+            <div
+              key={question.id}
+              className="bg-white dark:bg-gray-800 shadow rounded-lg p-6"
+            >
+              <h3 className="text-lg font-semibold mb-4">
+                Question {index + 1}
+              </h3>
+              <p className="mb-4">{question.text}</p>
+              
+              {/* All Options */}
+              <div className="space-y-2 mb-4">
+                <div className="font-medium mb-2">All Options:</div>
+                {question.options.map((option) => (
+                  <div
+                    key={option.id}
+                    className={`p-3 rounded-lg border ${
+                      option.selected
+                        ? option.isCorrect
                           ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                          : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <span className="mr-2">
-                          {option.id === selectedOptionId && '✓ '}
-                          {option.isCorrect && !option.selected && '✓ '}
-                        </span>
-                        {option.text}
-                      </div>
+                          : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                        : option.isCorrect
+                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                        : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <span className="mr-2">
+                        {option.selected && '✓ '}
+                        {option.isCorrect && !option.selected && '✓ '}
+                      </span>
+                      {option.text}
                     </div>
-                  ))}
-                </div>
-
-                {/* Selected and Correct Answers */}
-                <div className="space-y-2">
-                  {selectedOption && (
-                    <div
-                      className={`p-3 rounded-lg ${
-                        selectedOption.isCorrect
-                          ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                          : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-                      }`}
-                    >
-                      <div className="font-medium">Your Answer:</div>
-                      <div>{selectedOption.text}</div>
-                    </div>
-                  )}
-                  {selectedOption && !selectedOption.isCorrect && correctOption && (
-                    <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                      <div className="font-medium">Correct Answer:</div>
-                      <div>{correctOption.text}</div>
-                    </div>
-                  )}
-                  {question.explanation && (
-                    <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                      <div className="font-medium">Explanation:</div>
-                      <div>{question.explanation}</div>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                ))}
               </div>
-            );
-          })}
+
+              {/* Selected and Correct Answers */}
+              <div className="space-y-2">
+                {question.options.some(o => o.selected) && (
+                  <div
+                    className={`p-3 rounded-lg ${
+                      question.options.find(o => o.selected)?.isCorrect
+                        ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                        : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                    }`}
+                  >
+                    <div className="font-medium">Your Answer:</div>
+                    <div>{question.options.find(o => o.selected)?.text}</div>
+                  </div>
+                )}
+                {question.options.some(o => o.selected) && !question.options.find(o => o.selected)?.isCorrect && (
+                  <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                    <div className="font-medium">Correct Answer:</div>
+                    <div>{question.options.find(o => o.isCorrect)?.text}</div>
+                  </div>
+                )}
+                {question.explanation && (
+                  <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                    <div className="font-medium">Explanation:</div>
+                    <div>{question.explanation}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Navigation */}
