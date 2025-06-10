@@ -66,6 +66,8 @@ export async function POST(
         userId: session.user.id,
         score,
         timeSpent,
+        totalQuestions: quiz.questions.length,
+        correctAnswers,
         attemptDetails
       }
     });

@@ -90,7 +90,7 @@ export default function TakeQuiz({ params }: { params: { id: string } }) {
         },
         body: JSON.stringify({
           answers,
-          timeSpent: quiz?.timeLimit * 60 - timeLeft,
+          timeSpent: (quiz?.timeLimit ?? 30) * 60 - (timeLeft ?? 0),
         }),
       });
 

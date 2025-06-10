@@ -66,7 +66,7 @@ export async function GET(request: Request) {
         const totalScore = attempts.reduce((sum: number, attempt: { score: number }) => sum + attempt.score, 0);
         const averageScore = attempts.length > 0 ? totalScore / attempts.length : 0;
         const latestAttempt = attempts.length > 0 
-          ? attempts.reduce((latest: { updatedAt: Date }, current: { updatedAt: Date }) => 
+          ? attempts.reduce((latest, current) => 
               current.updatedAt > latest.updatedAt ? current : latest
             ).updatedAt
           : new Date();
