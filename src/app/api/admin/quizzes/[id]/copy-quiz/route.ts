@@ -37,11 +37,11 @@ export async function POST(
         timeLimit: quiz.timeLimit,
         isActive: quiz.isActive,
         questions: {
-          create: quiz.questions.map(q => ({
+          create: quiz.questions.map((q: any) => ({
             text: q.text,
             explanation: q.explanation,
             options: {
-              create: q.options.map(o => ({
+              create: q.options.map((o: any) => ({
                 text: o.text,
                 isCorrect: o.isCorrect
               }))
