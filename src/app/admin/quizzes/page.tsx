@@ -243,7 +243,7 @@ export default function AdminQuizzes() {
                               message: 'Are you sure you want to copy this quiz?',
                               onConfirm: async () => {
                                 try {
-                                  const res = await fetch(`/api/admin/quizzes/${quiz.id}/copy`, { method: 'POST' });
+                                  const res = await fetch(`/api/admin/quizzes/${quiz.id}/copy-quiz`, { method: 'POST' });
                                   if (res.ok) {
                                     const data = await res.json();
                                     router.push(`/admin/quizzes/${data.newQuizId}/edit`);
