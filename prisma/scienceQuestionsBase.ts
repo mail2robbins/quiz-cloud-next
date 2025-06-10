@@ -212,16 +212,6 @@ const scienceQuestionsBase = [
     explanation: 'The chemical symbol for iron is Fe, from the Latin word "ferrum."'
   },
   {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Combustion', isCorrect: true },
-      { text: 'Fusion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Combustion is a type of chemical reaction.'
-  },
-  {
     text: 'What is the name of the force that keeps planets in orbit around the Sun?',
     options: [
       { text: 'Gravity', isCorrect: true },
@@ -290,16 +280,6 @@ const scienceQuestionsBase = [
       { text: 'Cr', isCorrect: false }
     ],
     explanation: 'The chemical symbol for carbon is C.'
-  },
-  {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Fusion', isCorrect: true },
-      { text: 'Combustion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Fusion is a type of nuclear reaction.'
   },
   {
     text: 'What is the chemical symbol for oxygen?',
@@ -372,16 +352,6 @@ const scienceQuestionsBase = [
     explanation: 'Evaporation is the process by which water changes from a liquid to a gas.'
   },
   {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Combustion', isCorrect: true },
-      { text: 'Fusion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Combustion is a type of chemical reaction.'
-  },
-  {
     text: 'What is the chemical symbol for hydrogen?',
     options: [
       { text: 'H', isCorrect: true },
@@ -390,26 +360,6 @@ const scienceQuestionsBase = [
       { text: 'Ho', isCorrect: false }
     ],
     explanation: 'The chemical symbol for hydrogen is H.'
-  },
-  {
-    text: 'Which of the following is a type of cell?',
-    options: [
-      { text: 'Neuron', isCorrect: true },
-      { text: 'Atom', isCorrect: false },
-      { text: 'Molecule', isCorrect: false },
-      { text: 'Element', isCorrect: false }
-    ],
-    explanation: 'A neuron is a type of cell found in the nervous system.'
-  },
-  {
-    text: 'What is the name of the force that keeps planets in orbit around the Sun?',
-    options: [
-      { text: 'Gravity', isCorrect: true },
-      { text: 'Friction', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Inertia', isCorrect: false }
-    ],
-    explanation: 'Gravity is the force that keeps planets in orbit around the Sun.'
   },
   {
     text: 'Which of the following is a type of energy?',
@@ -552,36 +502,6 @@ const scienceQuestionsBase = [
     explanation: 'The chemical symbol for argon is Ar.'
   },
   {
-    text: 'Which of the following is a type of cell?',
-    options: [
-      { text: 'Neuron', isCorrect: true },
-      { text: 'Atom', isCorrect: false },
-      { text: 'Molecule', isCorrect: false },
-      { text: 'Element', isCorrect: false }
-    ],
-    explanation: 'A neuron is a type of cell found in the nervous system.'
-  },
-  {
-    text: 'What is the name of the force that keeps planets in orbit around the Sun?',
-    options: [
-      { text: 'Gravity', isCorrect: true },
-      { text: 'Friction', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Inertia', isCorrect: false }
-    ],
-    explanation: 'Gravity is the force that keeps planets in orbit around the Sun.'
-  },
-  {
-    text: 'Which of the following is a type of energy?',
-    options: [
-      { text: 'Potential', isCorrect: true },
-      { text: 'Force', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Velocity', isCorrect: false }
-    ],
-    explanation: 'Potential energy is the energy stored in an object due to its position.'
-  },
-  {
     text: 'What is the chemical symbol for krypton?',
     options: [
       { text: 'Kr', isCorrect: true },
@@ -672,16 +592,6 @@ const scienceQuestionsBase = [
     explanation: 'Evaporation is the process by which water changes from a liquid to a gas.'
   },
   {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Combustion', isCorrect: true },
-      { text: 'Fusion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Combustion is a type of chemical reaction.'
-  },
-  {
     text: 'What is the chemical symbol for uranium?',
     options: [
       { text: 'U', isCorrect: true },
@@ -690,36 +600,6 @@ const scienceQuestionsBase = [
       { text: 'Uo', isCorrect: false }
     ],
     explanation: 'The chemical symbol for uranium is U.'
-  },
-  {
-    text: 'Which of the following is a type of cell?',
-    options: [
-      { text: 'Neuron', isCorrect: true },
-      { text: 'Atom', isCorrect: false },
-      { text: 'Molecule', isCorrect: false },
-      { text: 'Element', isCorrect: false }
-    ],
-    explanation: 'A neuron is a type of cell found in the nervous system.'
-  },
-  {
-    text: 'What is the name of the force that keeps planets in orbit around the Sun?',
-    options: [
-      { text: 'Gravity', isCorrect: true },
-      { text: 'Friction', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Inertia', isCorrect: false }
-    ],
-    explanation: 'Gravity is the force that keeps planets in orbit around the Sun.'
-  },
-  {
-    text: 'Which of the following is a type of energy?',
-    options: [
-      { text: 'Potential', isCorrect: true },
-      { text: 'Force', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Velocity', isCorrect: false }
-    ],
-    explanation: 'Potential energy is the energy stored in an object due to its position.'
   },
   {
     text: 'What is the chemical symbol for plutonium?',
@@ -750,16 +630,6 @@ const scienceQuestionsBase = [
       { text: 'Deposition', isCorrect: false }
     ],
     explanation: 'Condensation is the process by which water changes from a gas to a liquid.'
-  },
-  {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Fusion', isCorrect: true },
-      { text: 'Combustion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Fusion is a type of nuclear reaction.'
   },
   {
     text: 'What is the chemical symbol for americium?',
@@ -832,16 +702,6 @@ const scienceQuestionsBase = [
     explanation: 'Evaporation is the process by which water changes from a liquid to a gas.'
   },
   {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Combustion', isCorrect: true },
-      { text: 'Fusion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Combustion is a type of chemical reaction.'
-  },
-  {
     text: 'What is the chemical symbol for berkelium?',
     options: [
       { text: 'Bk', isCorrect: true },
@@ -850,36 +710,6 @@ const scienceQuestionsBase = [
       { text: 'Bo', isCorrect: false }
     ],
     explanation: 'The chemical symbol for berkelium is Bk.'
-  },
-  {
-    text: 'Which of the following is a type of cell?',
-    options: [
-      { text: 'Neuron', isCorrect: true },
-      { text: 'Atom', isCorrect: false },
-      { text: 'Molecule', isCorrect: false },
-      { text: 'Element', isCorrect: false }
-    ],
-    explanation: 'A neuron is a type of cell found in the nervous system.'
-  },
-  {
-    text: 'What is the name of the force that keeps planets in orbit around the Sun?',
-    options: [
-      { text: 'Gravity', isCorrect: true },
-      { text: 'Friction', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Inertia', isCorrect: false }
-    ],
-    explanation: 'Gravity is the force that keeps planets in orbit around the Sun.'
-  },
-  {
-    text: 'Which of the following is a type of energy?',
-    options: [
-      { text: 'Potential', isCorrect: true },
-      { text: 'Force', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Velocity', isCorrect: false }
-    ],
-    explanation: 'Potential energy is the energy stored in an object due to its position.'
   },
   {
     text: 'What is the chemical symbol for californium?',
@@ -972,16 +802,6 @@ const scienceQuestionsBase = [
     explanation: 'Evaporation is the process by which water changes from a liquid to a gas.'
   },
   {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Combustion', isCorrect: true },
-      { text: 'Fusion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Combustion is a type of chemical reaction.'
-  },
-  {
     text: 'What is the chemical symbol for mendelevium?',
     options: [
       { text: 'Md', isCorrect: true },
@@ -990,36 +810,6 @@ const scienceQuestionsBase = [
       { text: 'Mn', isCorrect: false }
     ],
     explanation: 'The chemical symbol for mendelevium is Md.'
-  },
-  {
-    text: 'Which of the following is a type of cell?',
-    options: [
-      { text: 'Neuron', isCorrect: true },
-      { text: 'Atom', isCorrect: false },
-      { text: 'Molecule', isCorrect: false },
-      { text: 'Element', isCorrect: false }
-    ],
-    explanation: 'A neuron is a type of cell found in the nervous system.'
-  },
-  {
-    text: 'What is the name of the force that keeps planets in orbit around the Sun?',
-    options: [
-      { text: 'Gravity', isCorrect: true },
-      { text: 'Friction', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Inertia', isCorrect: false }
-    ],
-    explanation: 'Gravity is the force that keeps planets in orbit around the Sun.'
-  },
-  {
-    text: 'Which of the following is a type of energy?',
-    options: [
-      { text: 'Potential', isCorrect: true },
-      { text: 'Force', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Velocity', isCorrect: false }
-    ],
-    explanation: 'Potential energy is the energy stored in an object due to its position.'
   },
   {
     text: 'What is the chemical symbol for nobelium?',
@@ -1050,16 +840,6 @@ const scienceQuestionsBase = [
       { text: 'Deposition', isCorrect: false }
     ],
     explanation: 'Condensation is the process by which water changes from a gas to a liquid.'
-  },
-  {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Fusion', isCorrect: true },
-      { text: 'Combustion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Fusion is a type of nuclear reaction.'
   },
   {
     text: 'What is the chemical symbol for lawrencium?',
@@ -1132,16 +912,6 @@ const scienceQuestionsBase = [
     explanation: 'Evaporation is the process by which water changes from a liquid to a gas.'
   },
   {
-    text: 'Which of the following is a type of reaction?',
-    options: [
-      { text: 'Combustion', isCorrect: true },
-      { text: 'Fusion', isCorrect: false },
-      { text: 'Fission', isCorrect: false },
-      { text: 'Sublimation', isCorrect: false }
-    ],
-    explanation: 'Combustion is a type of chemical reaction.'
-  },
-  {
     text: 'What is the chemical symbol for dubnium?',
     options: [
       { text: 'Db', isCorrect: true },
@@ -1150,36 +920,6 @@ const scienceQuestionsBase = [
       { text: 'Do', isCorrect: false }
     ],
     explanation: 'The chemical symbol for dubnium is Db.'
-  },
-  {
-    text: 'Which of the following is a type of cell?',
-    options: [
-      { text: 'Neuron', isCorrect: true },
-      { text: 'Atom', isCorrect: false },
-      { text: 'Molecule', isCorrect: false },
-      { text: 'Element', isCorrect: false }
-    ],
-    explanation: 'A neuron is a type of cell found in the nervous system.'
-  },
-  {
-    text: 'What is the name of the force that keeps planets in orbit around the Sun?',
-    options: [
-      { text: 'Gravity', isCorrect: true },
-      { text: 'Friction', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Inertia', isCorrect: false }
-    ],
-    explanation: 'Gravity is the force that keeps planets in orbit around the Sun.'
-  },
-  {
-    text: 'Which of the following is a type of energy?',
-    options: [
-      { text: 'Potential', isCorrect: true },
-      { text: 'Force', isCorrect: false },
-      { text: 'Momentum', isCorrect: false },
-      { text: 'Velocity', isCorrect: false }
-    ],
-    explanation: 'Potential energy is the energy stored in an object due to its position.'
   },
   {
     text: 'What is the chemical symbol for seaborgium?',
