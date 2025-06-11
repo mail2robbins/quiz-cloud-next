@@ -5,8 +5,10 @@ import prisma from '@/lib/prisma';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
 ) {
+
+  const id = (await request.json()).id;
+
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.role !== 'ADMIN') {
@@ -15,7 +17,7 @@ export async function POST(
 
     // Find the quiz to copy
     const quiz = await prisma.quiz.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         questions: {
           include: { options: true }
