@@ -243,7 +243,8 @@ export default function AdminQuizzes() {
                               message: 'Are you sure you want to copy this quiz?',
                               onConfirm: async () => {
                                 try {
-                                  const res = await fetch(`/api/admin/quiz/copy`, { method: 'POST', body: JSON.stringify({id: quiz.id}) });
+                                  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5001';
+                                  const res = await fetch(`${baseUrl}/api/admin/quiz/copy`, { method: 'POST', body: JSON.stringify({id: quiz.id}) });
                                   if (res.ok) {
                                     const data = await res.json();
                                     router.push(`/admin/quiz/${data.newQuizId}/edit`);
