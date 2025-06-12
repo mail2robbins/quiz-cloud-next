@@ -1,6 +1,15 @@
 // 30 real, unique general knowledge questions for seeding
 
-const generalKnowledgeQuestionsBase = [
+interface Question {
+  text: string;
+  options: Array<{
+    text: string;
+    isCorrect: boolean;
+  }>;
+  explanation: string;
+}
+
+const generalKnowledgeQuestionsBase: Question[] = [
   {
     text: 'Which planet in our solar system has the most moons?',
     options: [
@@ -1803,4 +1812,4 @@ const generalKnowledgeQuestionsBase = [
   },
 ];
 
-module.exports = { generalKnowledgeQuestionsBase }; 
+export default generalKnowledgeQuestionsBase; 

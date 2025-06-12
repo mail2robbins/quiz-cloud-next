@@ -7,7 +7,16 @@
  * }
  */
 
-const historyQuestionsBase = [
+interface Question {
+  text: string;
+  options: Array<{
+    text: string;
+    isCorrect: boolean;
+  }>;
+  explanation: string;
+}
+
+const historyQuestionsBase: Question[] = [
   {
     text: 'Who was the first President of the United States?',
     options: [
@@ -920,4 +929,4 @@ const historyQuestionsBase = [
   },
 ];
 
-module.exports = { historyQuestionsBase }; 
+export default historyQuestionsBase; 

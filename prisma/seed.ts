@@ -1,13 +1,13 @@
-const { PrismaClient } = require('@prisma/client');
-const historyBase = require('./historyQuestionsBase').historyQuestionsBase;
-const scienceBase = require('./scienceQuestionsBase').scienceQuestionsBase;
-const generalBase = require('./generalKnowledgeQuestionsBase').generalKnowledgeQuestionsBase;
+import { PrismaClient } from '@prisma/client';
+import historyBase from './historyQuestionsBase';
+import scienceBase from './scienceQuestionsBase';
+import generalBase from './generalKnowledgeQuestionsBase';
 
 console.log('historyBase:', Array.isArray(historyBase), historyBase && historyBase.length);
 console.log('scienceBase:', Array.isArray(scienceBase), scienceBase && scienceBase.length);
 console.log('generalBase:', Array.isArray(generalBase), generalBase && generalBase.length);
 
-const prisma = new PrismaClient();
+const prismaClient = new PrismaClient();
 
 interface Question {
   text: string;
@@ -40,37 +40,36 @@ function generateQuestions(baseQuestions: Question[], category: string): Questio
   return questions;
 }
 
-
 const historyQuestions = generateQuestions(historyBase, 'History');
 const scienceQuestions = generateQuestions(scienceBase, 'Science');
 const generalQuestions = generateQuestions(generalBase, 'General');
 
 async function main() {
   // Clear existing data
-  await prisma.quizAttempt.deleteMany();
-  await prisma.answer.deleteMany();
-  await prisma.option.deleteMany();
-  await prisma.question.deleteMany();
-  await prisma.quiz.deleteMany();
-  await prisma.category.deleteMany();
+  await prismaClient.quizAttempt.deleteMany();
+  await prismaClient.answer.deleteMany();
+  await prismaClient.option.deleteMany();
+  await prismaClient.question.deleteMany();
+  await prismaClient.quiz.deleteMany();
+  await prismaClient.category.deleteMany();
 
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
   // Create categories
-  const historyCategory = await prisma.category.create({
+  const historyCategory = await prismaClient.category.create({
     data: {
       name: 'History',
       description: 'Questions about world history and historical events'
     }
   });
 
-  const scienceCategory = await prisma.category.create({
+  const scienceCategory = await prismaClient.category.create({
     data: {
       name: 'Science',
       description: 'Questions about various scientific disciplines'
     }
   });
 
-  const generalCategory = await prisma.category.create({
+  const generalCategory = await prismaClient.category.create({
     data: {
       name: 'General Knowledge',
       description: 'Questions about various topics including geography, culture, and current events'
@@ -78,8 +77,8 @@ async function main() {
   });
 
   // Create History Quiz
-   // Upsert admin user (no password field)
-   await prisma.user.upsert({
+  // Upsert admin user (no password field)
+  await prismaClient.user.upsert({
     where: { email: adminEmail },
     update: { role: 'ADMIN' },
     create: {
@@ -89,7 +88,7 @@ async function main() {
     },
   });
   
-  const historyQuiz = await prisma.quiz.create({
+  const historyQuiz = await prismaClient.quiz.create({
     data: {
       title: 'World History Quiz',
       description: 'Test your knowledge of world history from ancient civilizations to modern times',
@@ -109,7 +108,7 @@ async function main() {
   });
 
   // Create Science Quiz
-  const scienceQuiz = await prisma.quiz.create({
+  const scienceQuiz = await prismaClient.quiz.create({
     data: {
       title: 'General Science Quiz',
       description: 'Test your knowledge of physics, chemistry, biology, and astronomy',
@@ -129,7 +128,7 @@ async function main() {
   });
 
   // Create General Knowledge Quiz
-  const generalQuiz = await prisma.quiz.create({
+  const generalQuiz = await prismaClient.quiz.create({
     data: {
       title: 'General Knowledge Quiz',
       description: 'Test your knowledge of various topics including geography, culture, and current events',
@@ -157,5 +156,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await prismaClient.$disconnect();
   }); 

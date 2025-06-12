@@ -1,6 +1,15 @@
 // 30 real, unique science questions for seeding
 
-const scienceQuestionsBase = [
+interface Question {
+  text: string;
+  options: Array<{
+    text: string;
+    isCorrect: boolean;
+  }>;
+  explanation: string;
+}
+
+const scienceQuestionsBase: Question[] = [
   {
     text: 'What is the chemical symbol for gold?',
     options: [
@@ -943,4 +952,4 @@ const scienceQuestionsBase = [
   },
 ];
 
-module.exports = { scienceQuestionsBase }; 
+export default scienceQuestionsBase; 
