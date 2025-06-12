@@ -54,7 +54,7 @@ export default function AdminQuizzes() {
       setLoading(true);
       try {
         const [quizRes, catRes] = await Promise.all([
-          fetch('/api/admin/quizzes'),
+          fetch('/api/admin/quiz'),
           fetch('/api/categories'),
         ]);
         if (quizRes.ok && catRes.ok) {
@@ -120,7 +120,7 @@ export default function AdminQuizzes() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Quizzes</h1>
         <Link
-          href="/admin/quizzes/create"
+          href="/admin/quiz/create"
           className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
         >
           Create New Quiz
@@ -221,7 +221,7 @@ export default function AdminQuizzes() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div className="flex space-x-3">
                         <Link
-                          href={`/admin/quizzes/${quiz.id}/edit`}
+                          href={`/admin/quiz/${quiz.id}/edit`}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                         >
                           Edit
@@ -242,18 +242,17 @@ export default function AdminQuizzes() {
                               open: true,
                               message: 'Are you sure you want to copy this quiz?',
                               onConfirm: async () => {
-                                // try {
-                                //   const res = await fetch(`/api/admin/quizzes/copy`, { method: 'POST', body: JSON.stringify({id: quiz.id}) });
-                                //   if (res.ok) {
-                                //     const data = await res.json();
-                                //     router.push(`/admin/quizzes/${data.newQuizId}/edit`);
-                                //   } else {
-                                //     setAlertModal({ open: true, message: 'Failed to copy quiz' });
-                                //   }
-                                // } catch (e) {
-                                //   setAlertModal({ open: true, message: 'Failed to copy quiz' });
-                                // }
-                                setAlertModal({ open: true, message: 'Failed to copy quiz' });
+                                try {
+                                  const res = await fetch(`/api/admin/quiz/copy`, { method: 'POST', body: JSON.stringify({id: quiz.id}) });
+                                  if (res.ok) {
+                                    const data = await res.json();
+                                    router.push(`/admin/quiz/${data.newQuizId}/edit`);
+                                  } else {
+                                    setAlertModal({ open: true, message: 'Failed to copy quiz' });
+                                  }
+                                } catch (e) {
+                                  setAlertModal({ open: true, message: 'Failed to copy quiz' });
+                                }
                               }
                             });
                           }}
