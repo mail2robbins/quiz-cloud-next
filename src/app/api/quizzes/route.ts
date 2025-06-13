@@ -65,9 +65,17 @@ export async function GET(request: Request) {
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+
     const quizzes = await prisma.quiz.findMany({
       where: {
         isActive: true,
+        ...(category && {
+          category: {
+            name: category
+          }
+        })
       },
       include: {
         category: true,
