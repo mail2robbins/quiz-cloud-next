@@ -20,9 +20,6 @@ const nextConfig = {
       }
     ];
   },
-  experimental: {
-    appDir: true, // Ensures Next.js uses the App Router correctly
-  },
 };
 
 module.exports = nextConfig;
